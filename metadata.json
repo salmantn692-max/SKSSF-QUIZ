@@ -1,0 +1,6 @@
+{
+  "name": "ക്വിസ് അഡ്മിൻ",
+  "description": "മൾട്ടി-സ്റ്റേജ് ക്വിസ് മത്സരങ്ങൾ നിയന്ത്രിക്കാനുള്ള സമ്പൂർണ്ണ മലയാളം അഡ്മിൻ പ്ലാറ്റ്‌ഫോം (MCQ, ഇമേജ്, ഓഡിയോ റൗണ്ടുകൾ, തത്സമയ ടൈമർ, ലീഡർബോർഡ് & CSV എക്സ്പോർട്ട്).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
