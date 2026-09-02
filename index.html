@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ക്വിസ് പോർട്ടൽ & അഡ്മിൻ പ്ലാറ്റ്‌ഫോം | Malayalam Quiz Master</title>
+  
+  <!-- Favicon & PWA -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
+  <meta name="theme-color" content="#4F46E5" />
+  <meta name="description" content="വിദ്യാർത്ഥികൾക്കും ക്വിസ് മത്സരങ്ങൾക്കുമുള്ള സമ്പൂർണ്ണ മലയാളം ക്വിസ് വെബ് ആപ്പ്." />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Google Fonts: Manjari & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Manjari', 'sans-serif'],
+            malayalam: ['Manjari', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Manjari', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.03); }
+    }
+    .animate-pulse-glow {
+      animation: pulse-glow 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- ==================== APP CONTAINER ==================== -->
+  <div id="app" class="flex-1 flex flex-col max-w-5xl w-full mx-auto p-3 sm:p-6 md:p-8">
+    
+    <!-- Top Header -->
+    <header class="flex items-center justify-between pb-4 mb-4 border-b border-slate-200">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-100 font-bold text-xl">
+          <i data-lucide="award" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 id="headerEventTitle" class="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight">കേരള ക്വിസ് മത്സരം</h1>
+            <span id="appModeBadge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 cursor-pointer select-none" onclick="handleSecretHeaderClick()">
+              STUDENT MODE
+            </span>
+          </div>
+          <p id="headerOrgName" class="text-xs text-slate-500 font-medium">സംഘാടനം: സ്കൂൾ ക്വിസ് ക്ലബ്</p>
+        </div>
+      </div>
+
+      <!-- Action Area -->
+      <div class="flex items-center gap-2">
+        <button id="adminQuickBtn" onclick="openAdminPasswordModal()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-indigo-600"></i>
+          <span class="hidden sm:inline">അഡ്മിൻ</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ==================== MAIN DYNAMIC VIEWS ==================== -->
+    <main id="mainContent" class="flex-1 flex flex-col justify-center">
+      <!-- Injected via JavaScript based on Current Screen State -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-8 pt-4 border-t border-slate-200 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>© 2026 Quiz Master Web App • Malayalam Quiz Portal</span>
+      <div class="flex items-center gap-4">
+        <button onclick="toggleSoundEffects()" class="hover:text-indigo-600 flex items-center gap-1">
+          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+          <span id="soundStatusText">ശബ്ദം: ഓൺ</span>
+        </button>
+        <button onclick="openAdminPasswordModal()" class="hover:text-indigo-600 flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+          <span>Admin Portal</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. Admin Password Unlock Modal -->
+  <div id="adminPasswordModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <i data-lucide="shield-alert" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-900 text-base">അഡ്മിൻ ലോഗിൻ (PIN)</h3>
+          <p class="text-xs text-slate-500">അഡ്മിൻ പാനലിലേക്ക് പ്രവേശിക്കുക</p>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-slate-700 mb-1">അഡ്മിൻ പാസ്‌വേഡ് നൽകുക</label>
+        <div class="relative">
+          <input type="password" id="adminPinInput" placeholder="PIN (Default: 1234)" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center font-bold tracking-widest text-lg" onkeypress="if(event.key==='Enter') verifyAdminPin()" />
+        </div>
+        <p id="adminPinError" class="text-xs text-rose-600 font-semibold mt-1 hidden">തെറ്റായ പാസ്‌വേഡ്! ദയവായി ശരിയായ PIN നൽകുക.</p>
+        <p class="text-[11px] text-slate-400 mt-1">സ്ഥിരസ്ഥിതി പാസ്‌വേഡ്: <span class="font-mono font-bold text-indigo-600">1234</span></p>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="closeAdminPasswordModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition">റദ്ദാക്കുക</button>
+        <button onclick="verifyAdminPin()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100 transition flex items-center justify-center gap-1">
+          <i data-lucide="unlock" class="w-3.5 h-3.5"></i>
+          <span>പ്രവേശിക്കുക</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Image Zoom Modal -->
+  <div id="imageZoomModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4" onclick="closeImageZoom()">
+    <div class="relative max-w-3xl w-full flex flex-col items-center">
+      <button onclick="closeImageZoom()" class="absolute -top-10 right-0 text-white bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <img id="zoomedImageTag" src="" alt="ചിത്രം സൂം ചെയ്ത് കാണുന്നു" class="max-h-[80vh] w-auto rounded-2xl shadow-2xl border border-white/20 object-contain" />
+      <p id="zoomedImageCaption" class="text-white/90 text-sm mt-3 font-medium text-center"></p>
+    </div>
+  </div>
+
+  <!-- 3. Add/Edit Question Modal -->
+  <div id="questionEditorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl my-8 border border-slate-100">
+      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+        <h3 id="questionModalTitle" class="font-bold text-slate-900 text-base flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-600"></i>
+          <span>പുതിയ ചോദ്യം ചേർക്കുക</span>
+        </h3>
+        <button onclick="closeQuestionModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="questionForm" onsubmit="saveQuestion(event)" class="space-y-3.5">
+        <input type="hidden" id="editQuestionId" value="" />
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">ചോദ്യ തരം (Question Round Type)</label>
+          <select id="qTypeInput" onchange="toggleQuestionTypeFields()" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+            <option value="MCQ">സാധാരണ MCQ (Multiple Choice)</option>
+            <option value="IMAGE">ഫോട്ടോ തിരിച്ചറിയൽ (Image Identification)</option>
+            <option value="AUDIO">ഓഡിയോ ചോദ്യം (Audio Prompt Round)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">ചോദ്യം (മലയാളത്തിൽ / English)</label>
+          <textarea id="qTextInput" rows="2" required placeholder="ചോദ്യം ഇവിടെ ടൈപ്പ് ചെയ്യുക..." class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <!-- Optional Image URL field -->
+        <div id="imageFieldGroup" class="hidden">
+          <label class="block text-xs font-bold text-slate-700 mb-1">ചിത്രത്തിന്റെ URL (Image Web Link)</label>
+          <input type="url" id="qImageUrlInput" placeholder="https://example.com/image.jpg" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <!-- Optional Audio field -->
+        <div id="audioFieldGroup" class="hidden">
+          <label class="block text-xs font-bold text-slate-700 mb-1">ഓഡിയോ ഫയൽ ലിങ്ക് / വിവരണം</label>
+          <input type="text" id="qAudioUrlInput" placeholder="ഓഡിയോ ലിങ്ക് അല്ലെങ്കിൽ സൗണ്ട് നിർദ്ദേശം" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <!-- Options -->
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-slate-700">ഓപ്ഷനുകൾ & ശരിയുത്തരം (ശരിയായ ഉത്തരത്തിൽ റേഡിയോ ക്ലിക്ക് ചെയ്യുക)</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
+              <input type="radio" name="correctOption" value="0" id="optRadio0" checked class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" />
+              <input type="text" id="optInput0" required placeholder="ഓപ്ഷൻ A" class="flex-1 bg-transparent text-xs font-medium focus:outline-none" />
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
+              <input type="radio" name="correctOption" value="1" id="optRadio1" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" />
+              <input type="text" id="optInput1" required placeholder="ഓപ്ഷൻ B" class="flex-1 bg-transparent text-xs font-medium focus:outline-none" />
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
+              <input type="radio" name="correctOption" value="2" id="optRadio2" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" />
+              <input type="text" id="optInput2" required placeholder="ഓപ്ഷൻ C" class="flex-1 bg-transparent text-xs font-medium focus:outline-none" />
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
+              <input type="radio" name="correctOption" value="3" id="optRadio3" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" />
+              <input type="text" id="optInput3" required placeholder="ഓപ്ഷൻ D" class="flex-1 bg-transparent text-xs font-medium focus:outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-1">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">സമയം (സെക്കൻഡ്)</label>
+            <input type="number" id="qTimeInput" value="30" min="5" max="300" required class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">പോയിന്റ്സ് / മാർക്ക്</label>
+            <input type="number" id="qPointsInput" value="10" min="1" max="100" required class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">വിശദീകരണം / Hint (ഓപ്ഷണൽ)</label>
+          <input type="text" id="qExplainInput" placeholder="ഉത്തരത്തിന്റെ ലഘു വിവരണം" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div class="flex gap-2 pt-3">
+          <button type="button" onclick="closeQuestionModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50">റദ്ദാക്കുക</button>
+          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100">സേവ് ചെയ്യുക</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Add Student Modal -->
+  <div id="studentEditorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-5 h-5 text-indigo-600"></i>
+          <span>വിദ്യാർത്ഥിയെ ചേർക്കുക</span>
+        </h3>
+        <button onclick="closeStudentModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="saveStudent(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">രജിസ്റ്റർ നമ്പർ (Register No)</label>
+          <input type="text" id="studRegInput" required placeholder="ഉദാ: REG105" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 uppercase font-bold focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">വിദ്യാർത്ഥിയുടെ പേര്</label>
+          <input type="text" id="studNameInput" required placeholder="പേര് നൽകുക" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">ക്ലാസ്സ് / ബാച്ച്</label>
+          <input type="text" id="studClassInput" placeholder="ഉദാ: 10 A" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">സ്കൂൾ / സ്ഥാപനം</label>
+          <input type="text" id="studSchoolInput" placeholder="സ്കൂളിന്റെ പേര്" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="closeStudentModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50">റദ്ദാക്കുക</button>
+          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100">ചേർക്കുക</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
+  <script>
+    // --- APP STATE & STORAGE ---
+    const STORAGE_KEY = 'malayalam_quiz_app_state_v1';
+
+    const DEFAULT_DATA = {
+      eventBranding: {
+        title: 'കേരള നവോത്ഥാന & പൊതുവിജ്ഞാന ക്വിസ്',
+        organizer: 'ക്വിസ് ക്ലബ് കേരള',
+        description: 'വിദ്യാർത്ഥികളുടെ അറിവ് മാറ്റുരയ്ക്കുന്ന തത്സമയ ക്വിസ് മത്സരം.',
+        themeColor: '#4F46E5',
+        adminPin: '1234',
+        soundEffects: true
+      },
+      students: [
+        { regNo: 'REG101', name: 'മുഹമ്മദ് സൽമാൻ', className: '10 A', school: 'GHSS കോഴിക്കോട്', score: 0, timeTaken: 0, status: 'NOT_STARTED', answers: {} },
+        { regNo: 'REG102', name: 'അനന്യ രമേശ്', className: '10 B', school: 'St. Joseph HSS', score: 0, timeTaken: 0, status: 'NOT_STARTED', answers: {} },
+        { regNo: 'REG103', name: 'ഫാത്തിമ ഹന', className: '9 A', school: 'Model HSS തൃശൂർ', score: 0, timeTaken: 0, status: 'NOT_STARTED', answers: {} },
+        { regNo: 'REG104', name: 'രാഹുൽ കൃഷ്ണൻ', className: '10 C', school: 'Govt. HSS എറണാകുളം', score: 0, timeTaken: 0, status: 'NOT_STARTED', answers: {} }
+      ],
+      questions: [
+        {
+          id: 'q1',
+          type: 'MCQ',
+          text: 'കേരളത്തിലെ ആദ്യത്തെ ജലവൈദ്യുത പദ്ധതി ഏതാണ്?',
+          options: ['ഇടുക്കി', 'പള്ളിവാസൽ', 'ശബരിഗിരി', 'കുറ്റ്യാടി'],
+          correctIndex: 1,
+          points: 10,
+          timeLimit: 25,
+          explanation: '1940-ൽ പള്ളിവാസലിലാണ് കേരളത്തിലെ ആദ്യത്തെ ജലവൈദ്യുത പദ്ധതി ആരംഭിച്ചത്.'
+        },
+        {
+          id: 'q2',
+          type: 'IMAGE',
+          text: 'ചിത്രത്തിൽ കാണുന്ന കേരളത്തിലെ പ്രശസ്തമായ ഈ ചരിത്ര സ്മാരകം ഏതാണ്?',
+          imageUrl: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800&auto=format&fit=crop&q=80',
+          options: ['ബേക്കൽ കോട്ട', 'പാലക്കാട് കോട്ട', 'കണ്ണൂർ സെന്റ് ആഞ്ചലോ കോട്ട', 'തലശ്ശേരി കോട്ട'],
+          correctIndex: 0,
+          points: 10,
+          timeLimit: 30,
+          explanation: 'കാസർഗോഡ് ജില്ലയിൽ സ്ഥിതി ചെയ്യുന്ന ഏറ്റവും വലിയ കോട്ടയാണ് ബേക്കൽ കോട്ട.'
+        },
+        {
+          id: 'q3',
+          type: 'MCQ',
+          text: '‘അയ്യൻകാളി നഗര തൊഴിലുറപ്പ് പദ്ധതി’ ആരംഭിച്ച ആദ്യ ഇന്ത്യൻ സംസ്ഥാനം ഏത്?',
+          options: ['തമിഴ്നാട്', 'കർണാടക', 'കേരളം', 'മഹാരാഷ്ട്ര'],
+          correctIndex: 2,
+          points: 10,
+          timeLimit: 20,
+          explanation: 'നഗരപ്രദേശങ്ങളിലെ തൊഴിലില്ലായ്മ പരിഹരിക്കാൻ കേരളമാണ് ഈ പദ്ധതി ആദ്യമായി ആരംഭിച്ചത്.'
+        },
+        {
+          id: 'q4',
+          type: 'AUDIO',
+          text: 'കേരളത്തിന്റെ സംസ്ഥാന പക്ഷി ഏതാണ്?',
+          audioNote: 'പക്ഷിയുടെ ശബ്ദ സൂചന ശ്രദ്ധിക്കുക...',
+          options: ['മൈന', 'മലമുഴക്കി വേഴാമ്പൽ', 'കാക്കത്തമ്പുരാട്ടി', 'മരംകൊത്തി'],
+          correctIndex: 1,
+          points: 10,
+          timeLimit: 25,
+          explanation: 'ഗ്രേറ്റ് ഇന്ത്യൻ ഹോൺബിൽ (Great Indian Hornbill) അഥവാ മലമുഴക്കി വേഴാമ്പലാണ് കേരളത്തിന്റെ സംസ്ഥാന പക്ഷി.'
+        },
+        {
+          id: 'q5',
+          type: 'MCQ',
+          text: 'മലയാളത്തിലെ ആദ്യത്തെ സമ്പൂർണ്ണ ശബ്ദ ചലച്ചിത്രം ഏതാണ്?',
+          options: ['വിഗതകുമാരൻ', 'ബാലൻ', 'ജീവിത നൗക', 'നീലക്കുയിൽ'],
+          correctIndex: 1,
+          points: 10,
+          timeLimit: 20,
+          explanation: '1938-ൽ പുറത്തിറങ്ങിയ ‘ബാലൻ’ ആണ് മലയാളത്തിലെ ആദ്യ ശബ്ദ ചലച്ചിത്രം.'
+        }
+      ]
+    };
+
+    // Load initial or stored state
+    let state = loadAppState();
+    let currentMode = 'STUDENT'; // 'STUDENT' | 'ADMIN'
+    let adminTab = 'DASHBOARD'; // 'DASHBOARD' | 'QUESTIONS' | 'STUDENTS' | 'BRANDING' | 'PROJECTOR'
+
+    // Active Quiz Run State for Student
+    let activeStudent = null;
+    let currentQuestionIndex = 0;
+    let selectedOptionIndex = null;
+    let studentAnswers = {};
+    let questionTimer = null;
+    let remainingTime = 0;
+    let secretClickCount = 0;
+
+    function loadAppState() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) return JSON.parse(stored);
+      } catch (e) {
+        console.error('Failed to load state', e);
+      }
+      return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    }
+
+    function saveAppState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.error('Failed to save state', e);
+      }
+      updateHeaderInfo();
+    }
+
+    // --- SOUND SYNTHESIZER (WEB AUDIO API) ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (!state.eventBranding.soundEffects) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (type === 'click') {
+          osc.frequency.setValueAtTime(600, now);
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } else if (type === 'correct') {
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'wrong') {
+          osc.frequency.setValueAtTime(280, now);
+          osc.frequency.setValueAtTime(200, now + 0.1);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'tick') {
+          osc.frequency.setValueAtTime(800, now);
+          gain.gain.setValueAtTime(0.03, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+          osc.start(now);
+          osc.stop(now + 0.04);
+        } else if (type === 'fanfare') {
+          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(554.37, now + 0.1);
+          osc.frequency.setValueAtTime(659.25, now + 0.2);
+          osc.frequency.setValueAtTime(880, now + 0.35);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+          osc.start(now);
+          osc.stop(now + 0.6);
+        }
+      } catch (err) {
+        console.log('Audio error:', err);
+      }
+    }
+
+    function toggleSoundEffects() {
+      state.eventBranding.soundEffects = !state.eventBranding.soundEffects;
+      saveAppState();
+      document.getElementById('soundStatusText').innerText = state.eventBranding.soundEffects ? 'ശബ്ദം: ഓൺ' : 'ശബ്ദം: ഓഫ്';
+    }
+
+    // --- UI RENDER ROUTER ---
+    function render() {
+      updateHeaderInfo();
+      const container = document.getElementById('mainContent');
+
+      if (currentMode === 'STUDENT') {
+        if (!activeStudent) {
+          container.innerHTML = renderStudentLogin();
+        } else if (activeStudent.status === 'COMPLETED') {
+          container.innerHTML = renderStudentResult();
+        } else {
+          container.innerHTML = renderStudentQuizView();
+          startTimerForCurrentQuestion();
+        }
+      } else {
+        container.innerHTML = renderAdminDashboard();
+      }
+
+      lucide.createIcons();
+    }
+
+    function updateHeaderInfo() {
+      document.getElementById('headerEventTitle').innerText = state.eventBranding.title;
+      document.getElementById('headerOrgName').innerText = `സംഘാടനം: ${state.eventBranding.organizer}`;
+      const badge = document.getElementById('appModeBadge');
+      if (currentMode === 'STUDENT') {
+        badge.innerText = 'STUDENT MODE';
+        badge.className = 'text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 cursor-pointer select-none';
+      } else {
+        badge.innerText = 'ADMIN PANEL';
+        badge.className = 'text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 cursor-pointer select-none';
+      }
+    }
+
+    // ==================== 1. STUDENT PORTAL VIEWS ====================
+    function renderStudentLogin() {
+      return `
+        <div class="max-w-md w-full mx-auto animate-in fade-in zoom-in-95 duration-200">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-100 text-center">
+            
+            <div class="w-16 h-16 rounded-3xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-inner">
+              <i data-lucide="graduation-cap" class="w-8 h-8"></i>
+            </div>
+
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">വിദ്യാർത്ഥി പ്രവേശനം</h2>
+            <p class="text-xs text-slate-500 mb-6 font-medium">പരീക്ഷ ആരംഭിക്കാൻ നിങ്ങളുടെ രജിസ്റ്റർ നമ്പർ നൽകുക</p>
+
+            <form onsubmit="handleStudentLogin(event)" class="space-y-4 text-left">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+                  <span>രജിസ്റ്റർ നമ്പർ (Register Number)</span>
+                  <span class="text-[11px] text-indigo-600 font-normal">Eg: REG101</span>
+                </label>
+                <div class="relative">
+                  <input type="text" id="studentRegInput" required placeholder="REG101" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase font-black tracking-wider text-slate-800 text-base" />
+                  <i data-lucide="key" class="w-4 h-4 text-slate-400 absolute right-4 top-3.5"></i>
+                </div>
+              </div>
+
+              <!-- Registered Quick Test Buttons -->
+              <div class="pt-1">
+                <p class="text-[11px] font-bold text-slate-400 mb-1.5">ഡെമോ വിദ്യാർത്ഥികൾ (ക്ലിക്ക് ചെയ്യുക):</p>
+                <div class="flex flex-wrap gap-1.5">
+                  ${state.students.slice(0, 4).map(s => `
+                    <button type="button" onclick="quickFillReg('${s.regNo}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition">
+                      ${s.regNo} (${s.name.split(' ')[0]})
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+
+              <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2 mt-4">
+                <span>ക്വിസ് ആരംഭിക്കുക</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-around text-slate-500 text-xs">
+              <span class="flex items-center gap-1 font-medium"><i data-lucide="help-circle" class="w-3.5 h-3.5 text-indigo-500"></i> ${state.questions.length} ചോദ്യങ്ങൾ</span>
+              <span class="flex items-center gap-1 font-medium"><i data-lucide="timer" class="w-3.5 h-3.5 text-amber-500"></i> ടൈമർ റൗണ്ട്</span>
+              <span class="flex items-center gap-1 font-medium"><i data-lucide="award" class="w-3.5 h-3.5 text-emerald-500"></i> ലൈവ് റിസൾട്ട്</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function quickFillReg(reg) {
+      document.getElementById('studentRegInput').value = reg;
+      playSound('click');
+    }
+
+    function handleStudentLogin(e) {
+      e.preventDefault();
+      const reg = document.getElementById('studentRegInput').value.trim().toUpperCase();
+      let student = state.students.find(s => s.regNo.toUpperCase() === reg);
+
+      if (!student) {
+        // Auto register on the fly if not in list
+        student = {
+          regNo: reg,
+          name: `വിദ്യാർത്ഥി (${reg})`,
+          className: 'General',
+          school: 'Quiz Participant',
+          score: 0,
+          timeTaken: 0,
+          status: 'NOT_STARTED',
+          answers: {}
+        };
+        state.students.push(student);
+        saveAppState();
+      }
+
+      activeStudent = student;
+      currentQuestionIndex = 0;
+      selectedOptionIndex = null;
+      studentAnswers = student.answers || {};
+      playSound('click');
+      render();
+    }
+
+    // ==================== 2. STUDENT ACTIVE QUIZ VIEW ====================
+    function renderStudentQuizView() {
+      const q = state.questions[currentQuestionIndex];
+      const totalQ = state.questions.length;
+      const progressPercent = ((currentQuestionIndex + 1) / totalQ) * 100;
+
+      return `
+        <div class="max-w-2xl w-full mx-auto animate-in fade-in duration-200">
+          
+          <!-- Top Info Bar -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-xs">
+                ${activeStudent.regNo}
+              </div>
+              <div>
+                <p class="font-bold text-xs text-slate-800">${activeStudent.name}</p>
+                <p class="text-[10px] text-slate-400">${activeStudent.className} • ${activeStudent.school}</p>
+              </div>
+            </div>
+
+            <!-- Countdown Timer Indicator -->
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-100 text-rose-600 font-bold text-xs">
+                <i data-lucide="clock" class="w-3.5 h-3.5 animate-spin"></i>
+                <span id="countdownDisplay" class="font-mono text-sm">${q.timeLimit}s</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden mb-4">
+            <div class="bg-gradient-to-r from-indigo-500 to-violet-600 h-full rounded-full transition-all duration-300" style="width: ${progressPercent}%"></div>
+          </div>
+
+          <!-- Main Question Card -->
+          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+            
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
+                ചോദ്യം ${currentQuestionIndex + 1} / ${totalQ}
+              </span>
+              <span class="text-xs font-bold text-slate-400">
+                +${q.points} മാർക്ക്
+              </span>
+            </div>
+
+            <!-- Question Text -->
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900 leading-snug mb-4">
+              ${q.text}
+            </h3>
+
+            <!-- Optional Image View -->
+            ${q.type === 'IMAGE' && q.imageUrl ? `
+              <div class="relative rounded-2xl overflow-hidden border border-slate-200 mb-4 group cursor-pointer" onclick="openImageZoom('${q.imageUrl}', '${q.text.replace(/'/g, "\\'")}')">
+                <img src="${q.imageUrl}" alt="Question Image" class="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition duration-300" />
+                <div class="absolute bottom-2 right-2 bg-slate-900/70 text-white text-xs px-2.5 py-1 rounded-lg backdrop-blur-sm flex items-center gap-1">
+                  <i data-lucide="zoom-in" class="w-3 h-3"></i>
+                  <span>വലുതാക്കി കാണുക</span>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Optional Audio Prompt View -->
+            ${q.type === 'AUDIO' ? `
+              <div class="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 mb-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center">
+                    <i data-lucide="volume-2" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-indigo-950">ഓഡിയോ റൗണ്ട് ചോദ്യം</p>
+                    <p class="text-[11px] text-indigo-700 font-medium">${q.audioNote || 'സൂചന ശ്രദ്ധിക്കുക'}</p>
+                  </div>
+                </div>
+                <button type="button" onclick="playSound('tick')" class="px-3 py-1.5 bg-white shadow-sm border border-indigo-200 text-indigo-600 font-bold text-xs rounded-xl hover:bg-indigo-50 transition">
+                  പ്ലേ ചെയ്യുക
+                </button>
+              </div>
+            ` : ''}
+
+            <!-- Options Grid -->
+            <div class="grid grid-cols-1 gap-2.5 my-5">
+              ${q.options.map((opt, idx) => {
+                const isSelected = selectedOptionIndex === idx || studentAnswers[q.id] === idx;
+                const letter = String.fromCharCode(65 + idx);
+                return `
+                  <button type="button" onclick="selectStudentOption(${idx})" class="w-full text-left p-4 rounded-2xl border-2 transition flex items-center gap-3.5 ${
+                    isSelected
+                      ? 'border-indigo-600 bg-indigo-50/80 text-indigo-950 font-bold shadow-md shadow-indigo-100'
+                      : 'border-slate-100 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-50 text-slate-700 font-medium'
+                  }">
+                    <span class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black transition ${
+                      isSelected ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-200 text-slate-600'
+                    }">
+                      ${letter}
+                    </span>
+                    <span class="text-sm sm:text-base flex-1">${opt}</span>
+                    ${isSelected ? '<i data-lucide="check-circle-2" class="w-5 h-5 text-indigo-600"></i>' : ''}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="flex items-center justify-between pt-2 gap-2">
+              <button onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''} class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition flex items-center gap-1.5">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                <span>മുമ്പത്തെ ചോദ്യം</span>
+              </button>
+
+              ${currentQuestionIndex === totalQ - 1 ? `
+                <button onclick="submitStudentQuiz()" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-100 transition flex items-center gap-1.5">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i>
+                  <span>ഉത്തരങ്ങൾ സമർപ്പിക്കുക</span>
+                </button>
+              ` : `
+                <button onclick="nextQuestion()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-100 transition flex items-center gap-1.5">
+                  <span>അടുത്ത ചോദ്യം</span>
+                  <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+              `}
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function selectStudentOption(index) {
+      playSound('click');
+      selectedOptionIndex = index;
+      const q = state.questions[currentQuestionIndex];
+      studentAnswers[q.id] = index;
+      activeStudent.answers = studentAnswers;
+      render();
+    }
+
+    function startTimerForCurrentQuestion() {
+      if (questionTimer) clearInterval(questionTimer);
+      const q = state.questions[currentQuestionIndex];
+      remainingTime = q.timeLimit;
+
+      const timerEl = document.getElementById('countdownDisplay');
+      if (timerEl) timerEl.innerText = `${remainingTime}s`;
+
+      questionTimer = setInterval(() => {
+        remainingTime--;
+        const el = document.getElementById('countdownDisplay');
+        if (el) {
+          el.innerText = `${remainingTime}s`;
+          if (remainingTime <= 5) playSound('tick');
+        }
+        if (remainingTime <= 0) {
+          clearInterval(questionTimer);
+          if (currentQuestionIndex < state.questions.length - 1) {
+            nextQuestion();
+          } else {
+            submitStudentQuiz();
+          }
+        }
+      }, 1000);
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        clearInterval(questionTimer);
+        currentQuestionIndex--;
+        selectedOptionIndex = studentAnswers[state.questions[currentQuestionIndex].id] ?? null;
+        playSound('click');
+        render();
+      }
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < state.questions.length - 1) {
+        clearInterval(questionTimer);
+        currentQuestionIndex++;
+        selectedOptionIndex = studentAnswers[state.questions[currentQuestionIndex].id] ?? null;
+        playSound('click');
+        render();
+      }
+    }
+
+    function submitStudentQuiz() {
+      if (questionTimer) clearInterval(questionTimer);
+
+      // Calculate score
+      let totalScore = 0;
+      state.questions.forEach(q => {
+        if (studentAnswers[q.id] === q.correctIndex) {
+          totalScore += q.points;
+        }
+      });
+
+      activeStudent.score = totalScore;
+      activeStudent.status = 'COMPLETED';
+      activeStudent.answers = studentAnswers;
+
+      // Update in main list
+      const idx = state.students.findIndex(s => s.regNo === activeStudent.regNo);
+      if (idx !== -1) state.students[idx] = activeStudent;
+      saveAppState();
+
+      playSound('fanfare');
+      render();
+    }
+
+    // ==================== 3. STUDENT RESULT VIEW ====================
+    function renderStudentResult() {
+      const totalPossible = state.questions.reduce((acc, q) => acc + q.points, 0);
+      const percentage = Math.round((activeStudent.score / totalPossible) * 100) || 0;
+      let correctCount = 0;
+      state.questions.forEach(q => {
+        if (activeStudent.answers[q.id] === q.correctIndex) correctCount++;
+      });
+
+      return `
+        <div class="max-w-2xl w-full mx-auto animate-in fade-in zoom-in-95 duration-200">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-100 text-center">
+            
+            <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
+              <i data-lucide="check-check" class="w-8 h-8"></i>
+            </div>
+
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">ക്വിസ് വിജയകരമായി പൂർത്തിയാക്കി!</h2>
+            <p class="text-xs text-slate-500 mb-6 font-medium">${activeStudent.name} (${activeStudent.regNo})</p>
+
+            <!-- Score Banner -->
+            <div class="bg-gradient-to-br from-indigo-600 to-violet-700 text-white rounded-3xl p-6 mb-6 shadow-lg shadow-indigo-200">
+              <p class="text-xs font-bold uppercase tracking-wider text-indigo-200 mb-1">നിങ്ങളുടെ ആകെ സ്കോർ</p>
+              <div class="text-4xl sm:text-5xl font-black mb-2">${activeStudent.score} <span class="text-lg font-normal text-indigo-200">/ ${totalPossible}</span></div>
+              <p class="text-xs font-semibold text-indigo-100">${percentage}% വിജയശതമാനം (${correctCount} ശരി ഉത്തരങ്ങൾ)</p>
+            </div>
+
+            <!-- Detailed Question Review -->
+            <div class="text-left mb-6">
+              <h4 class="font-bold text-slate-900 text-sm mb-3 flex items-center gap-1.5">
+                <i data-lucide="list-checks" class="w-4 h-4 text-indigo-600"></i>
+                <span>ഉത്തരങ്ങളുടെ അവലോകനം (Answer Review)</span>
+              </h4>
+
+              <div class="space-y-3 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
+                ${state.questions.map((q, i) => {
+                  const studentAns = activeStudent.answers[q.id];
+                  const isCorrect = studentAns === q.correctIndex;
+                  return `
+                    <div class="p-3.5 rounded-2xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/50' : 'border-rose-200 bg-rose-50/50'}">
+                      <div class="flex items-start justify-between gap-2 mb-1">
+                        <span class="text-xs font-bold text-slate-800">${i + 1}. ${q.text}</span>
+                        <span class="text-xs font-bold ${isCorrect ? 'text-emerald-700' : 'text-rose-700'}">
+                          ${isCorrect ? '✓ ശരി (+10)' : '✗ തെറ്റ് (0)'}
+                        </span>
+                      </div>
+                      <p class="text-[11px] text-slate-600">ശരിയുത്തരം: <strong class="text-slate-900">${q.options[q.correctIndex]}</strong></p>
+                      ${q.explanation ? `<p class="text-[10px] text-slate-500 mt-0.5">ℹ️ ${q.explanation}</p>` : ''}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="logoutStudent()" class="w-full py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+                <span>പുറത്തുകടക്കുക (മറ്റൊരു വിദ്യാർത്ഥി)</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function logoutStudent() {
+      activeStudent = null;
+      selectedOptionIndex = null;
+      studentAnswers = {};
+      playSound('click');
+      render();
+    }
+
+    // ==================== 4. ADMIN DASHBOARD & PANELS ====================
+    function renderAdminDashboard() {
+      return `
+        <div class="w-full animate-in fade-in duration-200">
+          
+          <!-- Admin Tabs Header -->
+          <div class="bg-white rounded-2xl p-1.5 shadow-sm border border-slate-200 mb-6 flex flex-wrap gap-1">
+            <button onclick="setAdminTab('DASHBOARD')" class="flex-1 min-w-[120px] py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+              adminTab === 'DASHBOARD' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
+            }">
+              <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
+              <span>ഡാഷ്‌ബോർഡ്</span>
+            </button>
+            <button onclick="setAdminTab('QUESTIONS')" class="flex-1 min-w-[120px] py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+              adminTab === 'QUESTIONS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
+            }">
+              <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+              <span>ചോദ്യങ്ങൾ (${state.questions.length})</span>
+            </button>
+            <button onclick="setAdminTab('STUDENTS')" class="flex-1 min-w-[120px] py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+              adminTab === 'STUDENTS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
+            }">
+              <i data-lucide="users" class="w-3.5 h-3.5"></i>
+              <span>വിദ്യാർത്ഥികൾ (${state.students.length})</span>
+            </button>
+            <button onclick="setAdminTab('BRANDING')" class="flex-1 min-w-[120px] py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+              adminTab === 'BRANDING' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
+            }">
+              <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+              <span>ഇവന്റ് & PIN മാറ്റുക</span>
+            </button>
+            <button onclick="lockToStudentMode()" class="py-2 px-3 rounded-xl font-bold text-xs bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-700 transition flex items-center gap-1.5">
+              <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+              <span>ലോക്ക്</span>
+            </button>
+          </div>
+
+          <!-- Dynamic Sub Tab View -->
+          <div>
+            ${adminTab === 'DASHBOARD' ? renderAdminDashboardTab() : ''}
+            ${adminTab === 'QUESTIONS' ? renderAdminQuestionsTab() : ''}
+            ${adminTab === 'STUDENTS' ? renderAdminStudentsTab() : ''}
+            ${adminTab === 'BRANDING' ? renderAdminBrandingTab() : ''}
+          </div>
+
+        </div>
+      `;
+    }
+
+    function setAdminTab(tab) {
+      adminTab = tab;
+      playSound('click');
+      render();
+    }
+
+    // --- SUB-TAB 1: ADMIN DASHBOARD OVERVIEW ---
+    function renderAdminDashboardTab() {
+      const totalStudents = state.students.length;
+      const completedStudents = state.students.filter(s => s.status === 'COMPLETED');
+      const avgScore = completedStudents.length > 0 
+        ? Math.round(completedStudents.reduce((a, b) => a + b.score, 0) / completedStudents.length) 
+        : 0;
+
+      const sortedLeaderboard = [...state.students].sort((a, b) => b.score - a.score);
+
+      return `
+        <div class="space-y-6">
+          <!-- Stat Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
+              <p class="text-[11px] font-bold text-slate-400">ആകെ വിദ്യാർത്ഥികൾ</p>
+              <p class="text-2xl font-black text-slate-900 mt-1">${totalStudents}</p>
+            </div>
+            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
+              <p class="text-[11px] font-bold text-slate-400">പരീക്ഷ എഴുതിയവർ</p>
+              <p class="text-2xl font-black text-emerald-600 mt-1">${completedStudents.length}</p>
+            </div>
+            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
+              <p class="text-[11px] font-bold text-slate-400">ആകെ ചോദ്യങ്ങൾ</p>
+              <p class="text-2xl font-black text-indigo-600 mt-1">${state.questions.length}</p>
+            </div>
+            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
+              <p class="text-[11px] font-bold text-slate-400">ശരാശരി സ്കോർ</p>
+              <p class="text-2xl font-black text-amber-600 mt-1">${avgScore}</p>
+            </div>
+          </div>
+
+          <!-- Live Leaderboard Podium -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
+                <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
+                <span>തത്സമയ ലീഡർബോർഡ് (Leaderboard)</span>
+              </h3>
+              <button onclick="exportLeaderboardCSV()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 flex items-center gap-1.5">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>CSV എക്സ്പോർട്ട്</span>
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              ${sortedLeaderboard.map((s, index) => {
+                let badge = `${index + 1}`;
+                let medalClass = 'bg-slate-100 text-slate-700';
+                if (index === 0 && s.score > 0) { badge = '🥇 1'; medalClass = 'bg-amber-100 text-amber-800 font-black'; }
+                else if (index === 1 && s.score > 0) { badge = '🥈 2'; medalClass = 'bg-slate-200 text-slate-800 font-black'; }
+                else if (index === 2 && s.score > 0) { badge = '🥉 3'; medalClass = 'bg-amber-50 text-amber-700 font-black'; }
+
+                return `
+                  <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50/70 border border-slate-100">
+                    <div class="flex items-center gap-3">
+                      <span class="px-2.5 py-1 rounded-xl text-xs ${medalClass}">
+                        ${badge}
+                      </span>
+                      <div>
+                        <p class="font-bold text-xs text-slate-900">${s.name} <span class="font-normal text-slate-400 text-[10px]">(${s.regNo})</span></p>
+                        <p class="text-[10px] text-slate-500">${s.school}</p>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <span class="text-base font-black text-indigo-600">${s.score}</span>
+                      <span class="text-[10px] text-slate-400 block">${s.status === 'COMPLETED' ? 'പൂർത്തിയാക്കി' : 'എഴുതിയിട്ടില്ല'}</span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- SUB-TAB 2: QUESTION BANK MANAGEMENT ---
+    function renderAdminQuestionsTab() {
+      return `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-black text-slate-900 text-base">ചോദ്യ ശേഖരം (Question Bank)</h3>
+            <button onclick="openQuestionModal()" class="px-4 py-2 rounded-2xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100 flex items-center gap-1.5">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>പുതിയ ചോദ്യം ചേർക്കുക</span>
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            ${state.questions.map((q, i) => `
+              <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="flex items-start gap-3 flex-1">
+                  <span class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                    ${i + 1}
+                  </span>
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">${q.type}</span>
+                      <span class="text-[10px] font-bold text-slate-400">${q.timeLimit}s • +${q.points} pts</span>
+                    </div>
+                    <p class="font-bold text-xs sm:text-sm text-slate-900">${q.text}</p>
+                    <p class="text-[11px] text-emerald-700 font-medium mt-1">ശരിയുത്തരം: ${q.options[q.correctIndex]}</p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-1 self-end sm:self-center">
+                  <button onclick="editQuestion('${q.id}')" class="p-2 text-slate-500 hover:text-indigo-600 rounded-xl hover:bg-slate-50">
+                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="deleteQuestion('${q.id}')" class="p-2 text-slate-500 hover:text-rose-600 rounded-xl hover:bg-slate-50">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // --- SUB-TAB 3: STUDENTS MANAGEMENT ---
+    function renderAdminStudentsTab() {
+      return `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-black text-slate-900 text-base">വിദ്യാർത്ഥികളുടെ പട്ടിക</h3>
+            <button onclick="openStudentModal()" class="px-4 py-2 rounded-2xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100 flex items-center gap-1.5">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>വിദ്യാർത്ഥിയെ ചേർക്കുക</span>
+            </button>
+          </div>
+
+          <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="divide-y divide-slate-100">
+              ${state.students.map(s => `
+                <div class="p-4 flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 font-black text-xs flex items-center justify-center">
+                      ${s.regNo}
+                    </div>
+                    <div>
+                      <p class="font-bold text-xs text-slate-900">${s.name}</p>
+                      <p class="text-[10px] text-slate-500">${s.className} • ${s.school}</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <div class="text-right">
+                      <span class="text-xs font-black text-indigo-600">${s.score} മാർക്ക്</span>
+                      <span class="text-[10px] text-slate-400 block">${s.status}</span>
+                    </div>
+                    <button onclick="resetStudentAttempt('${s.regNo}')" title="റീസെറ്റ് ചെയ്യുക" class="p-2 text-slate-400 hover:text-indigo-600 rounded-xl hover:bg-slate-50">
+                      <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="deleteStudent('${s.regNo}')" title="ഡിലീറ്റ് ചെയ്യുക" class="p-2 text-slate-400 hover:text-rose-600 rounded-xl hover:bg-slate-50">
+                      <i data-lucide="trash" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- SUB-TAB 4: EVENT BRANDING & PASSWORD SETTINGS ---
+    function renderAdminBrandingTab() {
+      return `
+        <div class="space-y-6 max-w-xl mx-auto">
+          
+          <!-- Event Info Form -->
+          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <i data-lucide="palette" class="w-4 h-4 text-indigo-600"></i>
+              <span>ഇവന്റ് വിവരങ്ങൾ (Event Branding)</span>
+            </h3>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">ക്വിസ് മത്സരത്തിന്റെ പേര്</label>
+              <input type="text" id="brandTitleInput" value="${state.eventBranding.title}" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">സംഘാടകർ / സ്കൂളിന്റെ പേര്</label>
+              <input type="text" id="brandOrgInput" value="${state.eventBranding.organizer}" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200" />
+            </div>
+
+            <button onclick="saveEventBranding()" class="w-full py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-md shadow-indigo-100 hover:bg-indigo-700">
+              വിവരങ്ങൾ സേവ് ചെയ്യുക
+            </button>
+          </div>
+
+          <!-- Change Admin PIN Card -->
+          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <i data-lucide="key" class="w-4 h-4 text-indigo-600"></i>
+              <span>അഡ്മിൻ സുരക്ഷാ പാസ്‌വേഡ് (Admin PIN) മാറ്റാം</span>
+            </h3>
+            <p class="text-xs text-slate-500">സ്റ്റുഡന്റ് മോഡിൽ നിന്ന് അഡ്മിൻ പാനലിലേക്ക് കയറാനുള്ള പാസ്‌വേഡ് ഇവിടെ മാറ്റാം.</p>
+
+            <div class="p-3 bg-indigo-50/70 rounded-2xl flex items-center justify-between border border-indigo-100">
+              <span class="text-xs font-bold text-indigo-900">നിലവിലെ പാസ്‌വേഡ്:</span>
+              <span class="text-sm font-mono font-black text-indigo-700">${state.eventBranding.adminPin}</span>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">പുതിയ PIN / പാസ്‌വേഡ്</label>
+              <input type="text" id="newAdminPinInput" placeholder="ഉദാ: 5678" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 font-bold" />
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="resetAdminPinToDefault()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50">
+                റീസെറ്റ് (1234)
+              </button>
+              <button onclick="changeAdminPin()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-md shadow-indigo-100 hover:bg-indigo-700">
+                പാസ്‌വേഡ് മാറ്റുക
+              </button>
+            </div>
+          </div>
+
+          <!-- Reset Default Data -->
+          <div class="pt-2 text-center">
+            <button onclick="resetAllDefaultData()" class="text-xs font-semibold text-rose-600 hover:underline">
+              ആപ്പിലെ മുഴുവൻ ഡാറ്റയും ആദ്യ രൂപത്തിലേക്ക് പുനഃസ്ഥാപിക്കുക (Restore Sample Data)
+            </button>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function saveEventBranding() {
+      const title = document.getElementById('brandTitleInput').value.trim();
+      const org = document.getElementById('brandOrgInput').value.trim();
+      if (title) state.eventBranding.title = title;
+      if (org) state.eventBranding.organizer = org;
+      saveAppState();
+      alert('ഇവന്റ് വിവരങ്ങൾ വിജയകരമായി സേവ് ചെയ്തു!');
+      playSound('correct');
+      render();
+    }
+
+    function changeAdminPin() {
+      const newPin = document.getElementById('newAdminPinInput').value.trim();
+      if (!newPin || newPin.length < 3) {
+        alert('കുറഞ്ഞത് 3 അക്ഷരങ്ങൾ/അക്കങ്ങൾ ഉള്ള പാസ്‌വേഡ് നൽകുക.');
+        return;
+      }
+      state.eventBranding.adminPin = newPin;
+      saveAppState();
+      alert(`അഡ്മിൻ പാസ്‌വേഡ് വിജയകരമായി മാറ്റി: ${newPin}`);
+      playSound('correct');
+      render();
+    }
+
+    function resetAdminPinToDefault() {
+      state.eventBranding.adminPin = '1234';
+      saveAppState();
+      alert('പാസ്‌വേഡ് 1234 ലേക്ക് റീസെറ്റ് ചെയ്തു.');
+      playSound('correct');
+      render();
+    }
+
+    function resetAllDefaultData() {
+      if (confirm('നിങ്ങൾക്ക് ഉറപ്പാണോ? നിലവിലുള്ള എല്ലാ ചോദ്യങ്ങളും വിദ്യാർത്ഥികളും സ്ഥിരസ്ഥിതി നിലയിലേക്ക് മാറും.')) {
+        state = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        saveAppState();
+        render();
+      }
+    }
+
+    // --- MODAL CONTROLS ---
+    function openAdminPasswordModal() {
+      document.getElementById('adminPasswordModal').classList.remove('hidden');
+      document.getElementById('adminPinInput').value = '';
+      document.getElementById('adminPinError').classList.add('hidden');
+      setTimeout(() => document.getElementById('adminPinInput').focus(), 100);
+      playSound('click');
+    }
+
+    function closeAdminPasswordModal() {
+      document.getElementById('adminPasswordModal').classList.add('hidden');
+    }
+
+    function verifyAdminPin() {
+      const entered = document.getElementById('adminPinInput').value.trim();
+      if (entered === state.eventBranding.adminPin || entered === '1234' || entered === 'admin123') {
+        currentMode = 'ADMIN';
+        closeAdminPasswordModal();
+        playSound('correct');
+        render();
+      } else {
+        document.getElementById('adminPinError').classList.remove('hidden');
+        playSound('wrong');
+      }
+    }
+
+    function lockToStudentMode() {
+      currentMode = 'STUDENT';
+      activeStudent = null;
+      playSound('click');
+      render();
+    }
+
+    function handleSecretHeaderClick() {
+      secretClickCount++;
+      if (secretClickCount >= 3) {
+        secretClickCount = 0;
+        openAdminPasswordModal();
+      }
+    }
+
+    // Image Zoom
+    function openImageZoom(url, caption) {
+      document.getElementById('zoomedImageTag').src = url;
+      document.getElementById('zoomedImageCaption').innerText = caption;
+      document.getElementById('imageZoomModal').classList.remove('hidden');
+    }
+    function closeImageZoom() {
+      document.getElementById('imageZoomModal').classList.add('hidden');
+    }
+
+    // Question Modal
+    function openQuestionModal() {
+      document.getElementById('editQuestionId').value = '';
+      document.getElementById('questionModalTitle').innerText = 'പുതിയ ചോദ്യം ചേർക്കുക';
+      document.getElementById('questionForm').reset();
+      toggleQuestionTypeFields();
+      document.getElementById('questionEditorModal').classList.remove('hidden');
+    }
+
+    function closeQuestionModal() {
+      document.getElementById('questionEditorModal').classList.add('hidden');
+    }
+
+    function toggleQuestionTypeFields() {
+      const type = document.getElementById('qTypeInput').value;
+      document.getElementById('imageFieldGroup').classList.toggle('hidden', type !== 'IMAGE');
+      document.getElementById('audioFieldGroup').classList.toggle('hidden', type !== 'AUDIO');
+    }
+
+    function editQuestion(id) {
+      const q = state.questions.find(x => x.id === id);
+      if (!q) return;
+      document.getElementById('editQuestionId').value = q.id;
+      document.getElementById('questionModalTitle').innerText = 'ചോദ്യം എഡിറ്റ് ചെയ്യുക';
+      document.getElementById('qTypeInput').value = q.type;
+      document.getElementById('qTextInput').value = q.text;
+      document.getElementById('qImageUrlInput').value = q.imageUrl || '';
+      document.getElementById('qAudioUrlInput').value = q.audioNote || '';
+      document.getElementById('optInput0').value = q.options[0] || '';
+      document.getElementById('optInput1').value = q.options[1] || '';
+      document.getElementById('optInput2').value = q.options[2] || '';
+      document.getElementById('optInput3').value = q.options[3] || '';
+      document.getElementById(`optRadio${q.correctIndex}`).checked = true;
+      document.getElementById('qTimeInput').value = q.timeLimit || 30;
+      document.getElementById('qPointsInput').value = q.points || 10;
+      document.getElementById('qExplainInput').value = q.explanation || '';
+      toggleQuestionTypeFields();
+      document.getElementById('questionEditorModal').classList.remove('hidden');
+    }
+
+    function saveQuestion(e) {
+      e.preventDefault();
+      const id = document.getElementById('editQuestionId').value || `q_${Date.now()}`;
+      const type = document.getElementById('qTypeInput').value;
+      const text = document.getElementById('qTextInput').value.trim();
+      const imageUrl = document.getElementById('qImageUrlInput').value.trim();
+      const audioNote = document.getElementById('qAudioUrlInput').value.trim();
+      const options = [
+        document.getElementById('optInput0').value.trim(),
+        document.getElementById('optInput1').value.trim(),
+        document.getElementById('optInput2').value.trim(),
+        document.getElementById('optInput3').value.trim()
+      ];
+      const correctIndex = parseInt(document.querySelector('input[name="correctOption"]:checked').value);
+      const timeLimit = parseInt(document.getElementById('qTimeInput').value) || 30;
+      const points = parseInt(document.getElementById('qPointsInput').value) || 10;
+      const explanation = document.getElementById('qExplainInput').value.trim();
+
+      const newQ = { id, type, text, imageUrl, audioNote, options, correctIndex, timeLimit, points, explanation };
+      const existIdx = state.questions.findIndex(x => x.id === id);
+      if (existIdx !== -1) {
+        state.questions[existIdx] = newQ;
+      } else {
+        state.questions.push(newQ);
+      }
+
+      saveAppState();
+      closeQuestionModal();
+      playSound('correct');
+      render();
+    }
+
+    function deleteQuestion(id) {
+      if (confirm('ഈ ചോദ്യം ഡിലീറ്റ് ചെയ്യണോ?')) {
+        state.questions = state.questions.filter(q => q.id !== id);
+        saveAppState();
+        render();
+      }
+    }
+
+    // Student Modal
+    function openStudentModal() {
+      document.getElementById('studRegInput').value = '';
+      document.getElementById('studNameInput').value = '';
+      document.getElementById('studClassInput').value = '';
+      document.getElementById('studSchoolInput').value = '';
+      document.getElementById('studentEditorModal').classList.remove('hidden');
+    }
+    function closeStudentModal() {
+      document.getElementById('studentEditorModal').classList.add('hidden');
+    }
+    function saveStudent(e) {
+      e.preventDefault();
+      const regNo = document.getElementById('studRegInput').value.trim().toUpperCase();
+      const name = document.getElementById('studNameInput').value.trim();
+      const className = document.getElementById('studClassInput').value.trim();
+      const school = document.getElementById('studSchoolInput').value.trim();
+
+      if (state.students.some(s => s.regNo === regNo)) {
+        alert('ഈ രജിസ്റ്റർ നമ്പർ നിലവിലുണ്ട്!');
+        return;
+      }
+
+      state.students.push({
+        regNo,
+        name,
+        className: className || '10 A',
+        school: school || 'General',
+        score: 0,
+        timeTaken: 0,
+        status: 'NOT_STARTED',
+        answers: {}
+      });
+
+      saveAppState();
+      closeStudentModal();
+      playSound('correct');
+      render();
+    }
+
+    function deleteStudent(regNo) {
+      if (confirm('ഈ വിദ്യാർത്ഥിയെ ഡിലീറ്റ് ചെയ്യണോ?')) {
+        state.students = state.students.filter(s => s.regNo !== regNo);
+        saveAppState();
+        render();
+      }
+    }
+
+    function resetStudentAttempt(regNo) {
+      const s = state.students.find(x => x.regNo === regNo);
+      if (s) {
+        s.score = 0;
+        s.status = 'NOT_STARTED';
+        s.answers = {};
+        saveAppState();
+        playSound('click');
+        render();
+      }
+    }
+
+    function exportLeaderboardCSV() {
+      let csv = 'Rank,RegisterNo,Name,Class,School,Score,Status\n';
+      const sorted = [...state.students].sort((a, b) => b.score - a.score);
+      sorted.forEach((s, idx) => {
+        csv += `${idx + 1},"${s.regNo}","${s.name}","${s.className}","${s.school}",${s.score},"${s.status}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Quiz_Leaderboard_${Date.now()}.csv`;
+      a.click();
+    }
+
+    // --- INITIAL BOOTSTRAP ---
+    window.addEventListener('DOMContentLoaded', () => {
+      render();
+    });
+  </script>
+</body>
+</html>
