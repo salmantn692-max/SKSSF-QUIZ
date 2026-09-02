@@ -1,1408 +1,1062 @@
 <!DOCTYPE html>
 <html lang="ml">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ക്വിസ് പോർട്ടൽ & അഡ്മിൻ പ്ലാറ്റ്‌ഫോം | Malayalam Quiz Master</title>
-  
-  <!-- Favicon & PWA -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
-  <meta name="theme-color" content="#4F46E5" />
-  <meta name="description" content="വിദ്യാർത്ഥികൾക്കും ക്വിസ് മത്സരങ്ങൾക്കുമുള്ള സമ്പൂർണ്ണ മലയാളം ക്വിസ് വെബ് ആപ്പ്." />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>നൂറിന്‍ പ്രഭ · Quiz Competition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;600;700&family=Baloo+Chettan+2:wght@500;600;700;800&family=Chilanka&family=Gayathri:wght@400;700&family=Manjari:wght@400;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grad: radial-gradient(120% 90% at 15% 0%, #f0895f 0%, #e8628b 32%, #ac388f 58%, #5a2178 78%, #3a1a5c 100%);
+    --yellow: #f6e24a;
+    --yellow-ink: #4a3c05;
+    --white: #ffffff;
+    --ink: #2a1330;
+    --muted: rgba(255,255,255,0.72);
+    --green: #2fa860;
+    --red: #d9534f;
+    --radius: 999px;
+    --shadow: 0 10px 30px rgba(30,10,50,0.35);
+    --font-display: 'Baloo Chettan 2', 'Noto Sans Malayalam', sans-serif;
+    --font-body: 'Gayathri', 'Noto Sans Malayalam', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:var(--grad);
+    font-family:var(--font-body);
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  .shell{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    padding:40px 24px 28px;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+  .brand{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  .brand h1{
+    font-family:var(--font-display);
+    font-weight:800;
+    color:var(--white);
+    font-size:clamp(38px, 11vw, 56px);
+    line-height:1;
+    margin:0;
+    text-shadow:0 4px 18px rgba(0,0,0,0.18);
+  }
+  .brand p{
+    font-family:var(--font-display);
+    font-weight:600;
+    color:var(--muted);
+    font-size:clamp(15px, 4vw, 19px);
+    margin:8px 0 0;
+    letter-spacing:0.3px;
+  }
+  .quiz-title{
+    text-align:center;
+    color:var(--white);
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:clamp(24px, 6.4vw, 30px);
+    margin:22px 0 20px;
+  }
+  .progress{
+    display:flex;
+    justify-content:center;
+    gap:7px;
+    margin-bottom:18px;
+  }
+  .progress .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:rgba(255,255,255,0.32);
+    transition:background 0.25s, transform 0.25s;
+  }
+  .progress .dot.active{background:var(--white); transform:scale(1.25);}
+  .progress .dot.done{background:var(--yellow);}
+  .card-stack{flex:1; display:flex; flex-direction:column;}
+  .q-card-wrap{position:relative;}
+  .q-pill{
+    background:var(--yellow);
+    color:var(--yellow-ink);
+    border-radius:28px;
+    padding:22px 22px;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:clamp(16px,4.6vw,18px);
+    line-height:1.45;
+    box-shadow:var(--shadow);
+    margin-bottom:22px;
+    animation:pop-in 0.35s ease;
+  }
+  .timer-badge{position:absolute; top:-14px; right:-8px; width:52px; height:52px;}
+  .timer-badge svg{position:absolute; inset:0; transform:rotate(-90deg);}
+  .timer-badge circle.bg-fill{fill:#2a1330; fill-opacity:0.55; stroke:none;}
+  .timer-badge circle.track{fill:none; stroke:rgba(255,255,255,0.3); stroke-width:5;}
+  .timer-badge circle.fg{fill:none; stroke:#ffffff; stroke-width:5; stroke-linecap:round; transition:stroke-dashoffset 0.9s linear;}
+  .timer-badge .num{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; font-weight:700; font-size:15px; color:#fff;}
+  .timer-badge.low circle.fg{stroke:var(--red);}
+  .timer-badge.low .num{color:#ffb3b1;}
+  @keyframes pop-in{from{opacity:0; transform:translateY(10px) scale(0.98);} to{opacity:1; transform:translateY(0) scale(1);}}
+  .options{display:flex; flex-direction:column; gap:16px;}
+  .opt{
+    background:var(--white);
+    border:none;
+    border-radius:26px;
+    padding:18px 22px;
+    text-align:left;
+    font-family:inherit;
+    font-size:clamp(15px,4.2vw,17px);
+    font-weight:700;
+    color:var(--ink);
+    box-shadow:var(--shadow);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    transition:transform 0.15s, background 0.2s, color 0.2s;
+  }
+  .opt .letter{font-weight:800; font-family:var(--font-display);}
+  .opt:hover:not(:disabled){transform:translateY(-1px);}
+  .opt:active:not(:disabled){transform:translateY(0px) scale(0.99);}
+  .opt:focus-visible{outline:3px solid #fff; outline-offset:2px;}
+  .opt:disabled{cursor:default;}
+  .opt.correct{background:var(--green); color:#fff;}
+  .opt.wrong{background:var(--red); color:#fff;}
+  .opt.dim{opacity:0.55;}
+  .next-wrap{margin-top:22px; display:flex; justify-content:center;}
+  .btn{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:16px;
+    border:none;
+    border-radius:var(--radius);
+    padding:13px 30px;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+  }
+  .btn-light{background:var(--white); color:var(--ink);}
+  .btn-primary{background:var(--yellow); color:var(--yellow-ink);}
+  .btn-ghost{background:rgba(255,255,255,0.16); color:var(--white); box-shadow:none; border:1px solid rgba(255,255,255,0.4);}
+  .btn-outline{background:transparent; color:var(--ink); box-shadow:none; border:1px solid #ccc;}
+  .footer{
+    text-align:center;
+    margin-top:auto;
+    padding-top:30px;
+  }
+  .footer .club{
+    font-family:var(--font-display);
+    font-weight:700;
+    color:var(--white);
+    font-size:clamp(20px,5.6vw,26px);
+  }
+  .admin-link{
+    display:block;
+    text-align:center;
+    margin-top:14px;
+    color:rgba(255,255,255,0.55);
+    font-size:12px;
+    text-decoration:none;
+    font-family:'Poppins',sans-serif;
+    letter-spacing:0.5px;
+    cursor:pointer;
+  }
+  .admin-link:hover{color:rgba(255,255,255,0.85);}
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Canvas Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  /* End screen */
+  .end-card{
+    background:rgba(255,255,255,0.94);
+    border-radius:28px;
+    padding:30px 24px;
+    text-align:center;
+    box-shadow:var(--shadow);
+    animation:pop-in 0.35s ease;
+  }
+  .end-card h2{font-family:var(--font-display); margin:0 0 6px; font-size:24px;}
+  .end-card .score{font-size:44px; font-weight:800; font-family:var(--font-display); color:#7a2e8c; margin:10px 0;}
+  .end-card input{
+    width:100%; padding:13px 16px; border-radius:16px; border:1px solid #ddd;
+    font-family:inherit; font-size:15px; margin:14px 0; text-align:center;
+  }
+  .end-actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:8px;}
 
-  <!-- Google Fonts: Manjari & Plus Jakarta Sans -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  /* Loading / empty */
+  .center-note{
+    flex:1; display:flex; align-items:center; justify-content:center;
+    color:var(--white); text-align:center; font-weight:500; padding:20px;
+  }
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'Manjari', 'sans-serif'],
-            malayalam: ['Manjari', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-              900: '#312e81',
-            }
-          }
-        }
-      }
-    }
-  </script>
+  /* Admin overlay */
+  .overlay{
+    position:fixed; inset:0; background:#241033; z-index:50;
+    overflow-y:auto;
+    display:flex; justify-content:center;
+  }
+  .overlay-inner{width:100%; max-width:560px; padding:28px 20px 60px; color:#fff;}
+  .lock-box{
+    margin-top:18vh; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15);
+    border-radius:20px; padding:28px 24px; text-align:center;
+  }
+  .lock-box h3{font-family:var(--font-display); margin-top:0;}
+  .lock-box input{
+    width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.25);
+    background:rgba(255,255,255,0.08); color:#fff; font-size:15px; margin:14px 0; text-align:center;
+  }
+  .lock-box input::placeholder{color:rgba(255,255,255,0.5);}
+  .lock-err{color:#ff9b9b; font-size:13px; min-height:18px;}
 
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', 'Manjari', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background-color: #cbd5e1;
-      border-radius: 9999px;
-    }
-    @keyframes pulse-glow {
-      0%, 100% { opacity: 0.8; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.03); }
-    }
-    .animate-pulse-glow {
-      animation: pulse-glow 2s infinite ease-in-out;
-    }
-  </style>
+  .admin-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+  .admin-header h2{font-family:var(--font-display); margin:0; font-size:22px;}
+  .tabs{display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;}
+  .tab{
+    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#fff;
+    padding:9px 16px; border-radius:999px; font-size:13px; cursor:pointer; font-family:'Poppins',sans-serif;
+  }
+  .tab.active{background:var(--yellow); color:var(--yellow-ink); border-color:transparent; font-weight:600;}
+
+  .q-item{
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);
+    border-radius:16px; padding:16px; margin-bottom:12px;
+  }
+  .q-item .qt{font-weight:600; margin-bottom:8px; line-height:1.4;}
+  .q-item .opt-row{font-size:13.5px; padding:4px 0; color:rgba(255,255,255,0.85); display:flex; gap:6px;}
+  .q-item .opt-row.correct{color:#8ff0b0; font-weight:600;}
+  .q-item .row-actions{display:flex; gap:8px; margin-top:10px;}
+  .mini-btn{
+    font-size:12.5px; padding:7px 13px; border-radius:999px; border:none; cursor:pointer; font-family:'Poppins',sans-serif; font-weight:600;
+  }
+  .mini-edit{background:rgba(255,255,255,0.14); color:#fff;}
+  .mini-del{background:rgba(217,83,79,0.22); color:#ffb3b1;}
+
+  .form-box{
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);
+    border-radius:16px; padding:18px; margin-top:6px;
+  }
+  .form-box label{display:block; font-size:12.5px; color:rgba(255,255,255,0.6); margin:10px 0 4px;}
+  .form-box label:first-child{margin-top:0;}
+  .form-box input[type=text], .form-box textarea, .form-box select{
+    width:100%; padding:11px 13px; border-radius:10px; border:1px solid rgba(255,255,255,0.2);
+    background:rgba(255,255,255,0.07); color:#fff; font-family:inherit; font-size:14.5px; resize:vertical;
+  }
+  .form-box select option{ background:#241033; color:#fff; }
+  .radio-row{display:flex; align-items:center; gap:8px; margin:6px 0;}
+  .radio-row input{width:auto;}
+  .radio-row label{margin:0; font-size:13.5px; color:#fff;}
+  .form-actions{display:flex; gap:10px; margin-top:16px;}
+
+  table.lb{width:100%; border-collapse:collapse; font-size:14px;}
+  table.lb th{text-align:left; padding:8px; color:rgba(255,255,255,0.55); font-weight:500; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.15);}
+  table.lb td{padding:9px 8px; border-bottom:1px solid rgba(255,255,255,0.08);}
+  .empty-note{color:rgba(255,255,255,0.55); font-size:14px; padding:18px 0; text-align:center;}
+
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:#1c1c1c; color:#fff; padding:10px 20px; border-radius:999px; font-size:13.5px;
+    z-index:100; opacity:0; pointer-events:none; transition:opacity 0.25s, bottom 0.25s;
+  }
+  .toast.show{opacity:1; bottom:34px;}
+</style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+<body>
+<div id="root"></div>
 
-  <!-- ==================== APP CONTAINER ==================== -->
-  <div id="app" class="flex-1 flex flex-col max-w-5xl w-full mx-auto p-3 sm:p-6 md:p-8">
-    
-    <!-- Top Header -->
-    <header class="flex items-center justify-between pb-4 mb-4 border-b border-slate-200">
-      <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-100 font-bold text-xl">
-          <i data-lucide="award" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 id="headerEventTitle" class="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight">കേരള ക്വിസ് മത്സരം</h1>
-            <span id="appModeBadge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 cursor-pointer select-none" onclick="handleSecretHeaderClick()">
-              STUDENT MODE
-            </span>
-          </div>
-          <p id="headerOrgName" class="text-xs text-slate-500 font-medium">സംഘാടനം: സ്കൂൾ ക്വിസ് ക്ലബ്</p>
-        </div>
-      </div>
+<script>
+(function(){
+  var STORAGE_KEY = 'quiz-data-noorin-prabha';
+  var LB_KEY = 'leaderboard-noorin-prabha';
+  var ADMIN_PASS = 'skssf2026';
 
-      <!-- Action Area -->
-      <div class="flex items-center gap-2">
-        <button id="adminQuickBtn" onclick="openAdminPasswordModal()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
-          <i data-lucide="lock" class="w-3.5 h-3.5 text-indigo-600"></i>
-          <span class="hidden sm:inline">അഡ്മിൻ</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- ==================== MAIN DYNAMIC VIEWS ==================== -->
-    <main id="mainContent" class="flex-1 flex flex-col justify-center">
-      <!-- Injected via JavaScript based on Current Screen State -->
-    </main>
-
-    <!-- Footer -->
-    <footer class="mt-8 pt-4 border-t border-slate-200 text-center text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <span>© 2026 Quiz Master Web App • Malayalam Quiz Portal</span>
-      <div class="flex items-center gap-4">
-        <button onclick="toggleSoundEffects()" class="hover:text-indigo-600 flex items-center gap-1">
-          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
-          <span id="soundStatusText">ശബ്ദം: ഓൺ</span>
-        </button>
-        <button onclick="openAdminPasswordModal()" class="hover:text-indigo-600 flex items-center gap-1">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-          <span>Admin Portal</span>
-        </button>
-      </div>
-    </footer>
-  </div>
-
-  <!-- ==================== MODALS ==================== -->
-
-  <!-- 1. Admin Password Unlock Modal -->
-  <div id="adminPasswordModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-          <i data-lucide="shield-alert" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <h3 class="font-bold text-slate-900 text-base">അഡ്മിൻ ലോഗിൻ (PIN)</h3>
-          <p class="text-xs text-slate-500">അഡ്മിൻ പാനലിലേക്ക് പ്രവേശിക്കുക</p>
-        </div>
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-xs font-bold text-slate-700 mb-1">അഡ്മിൻ പാസ്‌വേഡ് നൽകുക</label>
-        <div class="relative">
-          <input type="password" id="adminPinInput" placeholder="PIN (Default: 1234)" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center font-bold tracking-widest text-lg" onkeypress="if(event.key==='Enter') verifyAdminPin()" />
-        </div>
-        <p id="adminPinError" class="text-xs text-rose-600 font-semibold mt-1 hidden">തെറ്റായ പാസ്‌വേഡ്! ദയവായി ശരിയായ PIN നൽകുക.</p>
-        <p class="text-[11px] text-slate-400 mt-1">സ്ഥിരസ്ഥിതി പാസ്‌വേഡ്: <span class="font-mono font-bold text-indigo-600">1234</span></p>
-      </div>
-
-      <div class="flex gap-2">
-        <button onclick="closeAdminPasswordModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition">റദ്ദാക്കുക</button>
-        <button onclick="verifyAdminPin()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100 transition flex items-center justify-center gap-1">
-          <i data-lucide="unlock" class="w-3.5 h-3.5"></i>
-          <span>പ്രവേശിക്കുക</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 2. Image Zoom Modal -->
-  <div id="imageZoomModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4" onclick="closeImageZoom()">
-    <div class="relative max-w-3xl w-full flex flex-col items-center">
-      <button onclick="closeImageZoom()" class="absolute -top-10 right-0 text-white bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-      <img id="zoomedImageTag" src="" alt="ചിത്രം സൂം ചെയ്ത് കാണുന്നു" class="max-h-[80vh] w-auto rounded-2xl shadow-2xl border border-white/20 object-contain" />
-      <p id="zoomedImageCaption" class="text-white/90 text-sm mt-3 font-medium text-center"></p>
-    </div>
-  </div>
-
-  <!-- 3. Add/Edit Question Modal -->
-  <div id="questionEditorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl my-8 border border-slate-100">
-      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
-        <h3 id="questionModalTitle" class="font-bold text-slate-900 text-base flex items-center gap-2">
-          <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-600"></i>
-          <span>പുതിയ ചോദ്യം ചേർക്കുക</span>
-        </h3>
-        <button onclick="closeQuestionModal()" class="text-slate-400 hover:text-slate-600 p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <form id="questionForm" onsubmit="saveQuestion(event)" class="space-y-3.5">
-        <input type="hidden" id="editQuestionId" value="" />
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ചോദ്യ തരം (Question Round Type)</label>
-          <select id="qTypeInput" onchange="toggleQuestionTypeFields()" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
-            <option value="MCQ">സാധാരണ MCQ (Multiple Choice)</option>
-            <option value="IMAGE">ഫോട്ടോ തിരിച്ചറിയൽ (Image Identification)</option>
-            <option value="AUDIO">ഓഡിയോ ചോദ്യം (Audio Prompt Round)</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ചോദ്യം (മലയാളത്തിൽ / English)</label>
-          <textarea id="qTextInput" rows="2" required placeholder="ചോദ്യം ഇവിടെ ടൈപ്പ് ചെയ്യുക..." class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500"></textarea>
-        </div>
-
-        <!-- Optional Image URL field -->
-        <div id="imageFieldGroup" class="hidden">
-          <label class="block text-xs font-bold text-slate-700 mb-1">ചിത്രത്തിന്റെ URL (Image Web Link)</label>
-          <input type="url" id="qImageUrlInput" placeholder="https://example.com/image.jpg" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
-        </div>
-
-        <!-- Optional Audio field -->
-        <div id="audioFieldGroup" class="hidden">
-          <label class="block text-xs font-bold text-slate-700 mb-1">ഓഡിയോ ഫയൽ ലിങ്ക് / വിവരണം</label>
-          <input type="text" id="qAudioUrlInput" placeholder="ഓഡിയോ ലിങ്ക് അല്ലെങ്കിൽ സൗണ്ട് നിർദ്ദേശം" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
-        </div>
-
-        <!-- Options -->
-        <div class="space-y-2">
-          <label class="block text-xs font-bold text-slate-700">ഓപ്ഷനുകൾ & ശരിയുത്തരം (ശരിയായ ഉത്തരത്തിൽ റേഡിയോ ക്ലിക്ക് ചെയ്യുക)</label>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <div class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
-              <input type="radio" name="correctOption" value="0" id="optRadio0" checked class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" />
-              <input type="text" id="optInput0" required placeholder="ഓപ്ഷൻ A" class="flex-1 bg-transparent text-xs font-medium focus:outline-none" />
-            </div>
-            <div class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
-              <input type="radio" name="correctOption" value="1" id="optRadio1" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" />
-              <input type="text" id="optInput1" required placeholder="ഓപ്ഷൻ B" class="flex-1 bg-transparent text-xs font-medium focus:outline-none" />
-            </div>
-            <div class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
-              <input type="radio" name="correctOption" value="2" id="optRadio2" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" />
-              <input type="text" id="optInput2" required placeholder="ഓപ്ഷൻ C" class="flex-1 bg-transparent text-xs font-medium focus:outline-none" />
-            </div>
-            <div class="flex items-center gap-2 p-2 rounded-xl border border-slate-200 bg-slate-50">
-              <input type="radio" name="correctOption" value="3" id="optRadio3" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" />
-              <input type="text" id="optInput3" required placeholder="ഓപ്ഷൻ D" class="flex-1 bg-transparent text-xs font-medium focus:outline-none" />
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 pt-1">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">സമയം (സെക്കൻഡ്)</label>
-            <input type="number" id="qTimeInput" value="30" min="5" max="300" required class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">പോയിന്റ്സ് / മാർക്ക്</label>
-            <input type="number" id="qPointsInput" value="10" min="1" max="100" required class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">വിശദീകരണം / Hint (ഓപ്ഷണൽ)</label>
-          <input type="text" id="qExplainInput" placeholder="ഉത്തരത്തിന്റെ ലഘു വിവരണം" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
-        </div>
-
-        <div class="flex gap-2 pt-3">
-          <button type="button" onclick="closeQuestionModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50">റദ്ദാക്കുക</button>
-          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100">സേവ് ചെയ്യുക</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- 4. Add Student Modal -->
-  <div id="studentEditorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100">
-      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
-        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
-          <i data-lucide="user-plus" class="w-5 h-5 text-indigo-600"></i>
-          <span>വിദ്യാർത്ഥിയെ ചേർക്കുക</span>
-        </h3>
-        <button onclick="closeStudentModal()" class="text-slate-400 hover:text-slate-600 p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <form onsubmit="saveStudent(event)" class="space-y-3">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">രജിസ്റ്റർ നമ്പർ (Register No)</label>
-          <input type="text" id="studRegInput" required placeholder="ഉദാ: REG105" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 uppercase font-bold focus:ring-2 focus:ring-indigo-500" />
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">വിദ്യാർത്ഥിയുടെ പേര്</label>
-          <input type="text" id="studNameInput" required placeholder="പേര് നൽകുക" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ക്ലാസ്സ് / ബാച്ച്</label>
-          <input type="text" id="studClassInput" placeholder="ഉദാ: 10 A" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">സ്കൂൾ / സ്ഥാപനം</label>
-          <input type="text" id="studSchoolInput" placeholder="സ്കൂളിന്റെ പേര്" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500" />
-        </div>
-
-        <div class="flex gap-2 pt-2">
-          <button type="button" onclick="closeStudentModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50">റദ്ദാക്കുക</button>
-          <button type="submit" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100">ചേർക്കുക</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
-  <script>
-    // --- APP STATE & STORAGE ---
-    const STORAGE_KEY = 'malayalam_quiz_app_state_v1';
-
-    const DEFAULT_DATA = {
-      eventBranding: {
-        title: 'കേരള നവോത്ഥാന & പൊതുവിജ്ഞാന ക്വിസ്',
-        organizer: 'ക്വിസ് ക്ലബ് കേരള',
-        description: 'വിദ്യാർത്ഥികളുടെ അറിവ് മാറ്റുരയ്ക്കുന്ന തത്സമയ ക്വിസ് മത്സരം.',
-        themeColor: '#4F46E5',
-        adminPin: '1234',
-        soundEffects: true
-      },
-      students: [
-        { regNo: 'REG101', name: 'മുഹമ്മദ് സൽമാൻ', className: '10 A', school: 'GHSS കോഴിക്കോട്', score: 0, timeTaken: 0, status: 'NOT_STARTED', answers: {} },
-        { regNo: 'REG102', name: 'അനന്യ രമേശ്', className: '10 B', school: 'St. Joseph HSS', score: 0, timeTaken: 0, status: 'NOT_STARTED', answers: {} },
-        { regNo: 'REG103', name: 'ഫാത്തിമ ഹന', className: '9 A', school: 'Model HSS തൃശൂർ', score: 0, timeTaken: 0, status: 'NOT_STARTED', answers: {} },
-        { regNo: 'REG104', name: 'രാഹുൽ കൃഷ്ണൻ', className: '10 C', school: 'Govt. HSS എറണാകുളം', score: 0, timeTaken: 0, status: 'NOT_STARTED', answers: {} }
-      ],
-      questions: [
-        {
-          id: 'q1',
-          type: 'MCQ',
-          text: 'കേരളത്തിലെ ആദ്യത്തെ ജലവൈദ്യുത പദ്ധതി ഏതാണ്?',
-          options: ['ഇടുക്കി', 'പള്ളിവാസൽ', 'ശബരിഗിരി', 'കുറ്റ്യാടി'],
-          correctIndex: 1,
-          points: 10,
-          timeLimit: 25,
-          explanation: '1940-ൽ പള്ളിവാസലിലാണ് കേരളത്തിലെ ആദ്യത്തെ ജലവൈദ്യുത പദ്ധതി ആരംഭിച്ചത്.'
-        },
-        {
-          id: 'q2',
-          type: 'IMAGE',
-          text: 'ചിത്രത്തിൽ കാണുന്ന കേരളത്തിലെ പ്രശസ്തമായ ഈ ചരിത്ര സ്മാരകം ഏതാണ്?',
-          imageUrl: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?w=800&auto=format&fit=crop&q=80',
-          options: ['ബേക്കൽ കോട്ട', 'പാലക്കാട് കോട്ട', 'കണ്ണൂർ സെന്റ് ആഞ്ചലോ കോട്ട', 'തലശ്ശേരി കോട്ട'],
-          correctIndex: 0,
-          points: 10,
-          timeLimit: 30,
-          explanation: 'കാസർഗോഡ് ജില്ലയിൽ സ്ഥിതി ചെയ്യുന്ന ഏറ്റവും വലിയ കോട്ടയാണ് ബേക്കൽ കോട്ട.'
-        },
-        {
-          id: 'q3',
-          type: 'MCQ',
-          text: '‘അയ്യൻകാളി നഗര തൊഴിലുറപ്പ് പദ്ധതി’ ആരംഭിച്ച ആദ്യ ഇന്ത്യൻ സംസ്ഥാനം ഏത്?',
-          options: ['തമിഴ്നാട്', 'കർണാടക', 'കേരളം', 'മഹാരാഷ്ട്ര'],
-          correctIndex: 2,
-          points: 10,
-          timeLimit: 20,
-          explanation: 'നഗരപ്രദേശങ്ങളിലെ തൊഴിലില്ലായ്മ പരിഹരിക്കാൻ കേരളമാണ് ഈ പദ്ധതി ആദ്യമായി ആരംഭിച്ചത്.'
-        },
-        {
-          id: 'q4',
-          type: 'AUDIO',
-          text: 'കേരളത്തിന്റെ സംസ്ഥാന പക്ഷി ഏതാണ്?',
-          audioNote: 'പക്ഷിയുടെ ശബ്ദ സൂചന ശ്രദ്ധിക്കുക...',
-          options: ['മൈന', 'മലമുഴക്കി വേഴാമ്പൽ', 'കാക്കത്തമ്പുരാട്ടി', 'മരംകൊത്തി'],
-          correctIndex: 1,
-          points: 10,
-          timeLimit: 25,
-          explanation: 'ഗ്രേറ്റ് ഇന്ത്യൻ ഹോൺബിൽ (Great Indian Hornbill) അഥവാ മലമുഴക്കി വേഴാമ്പലാണ് കേരളത്തിന്റെ സംസ്ഥാന പക്ഷി.'
-        },
-        {
-          id: 'q5',
-          type: 'MCQ',
-          text: 'മലയാളത്തിലെ ആദ്യത്തെ സമ്പൂർണ്ണ ശബ്ദ ചലച്ചിത്രം ഏതാണ്?',
-          options: ['വിഗതകുമാരൻ', 'ബാലൻ', 'ജീവിത നൗക', 'നീലക്കുയിൽ'],
-          correctIndex: 1,
-          points: 10,
-          timeLimit: 20,
-          explanation: '1938-ൽ പുറത്തിറങ്ങിയ ‘ബാലൻ’ ആണ് മലയാളത്തിലെ ആദ്യ ശബ്ദ ചലച്ചിത്രം.'
-        }
-      ]
-    };
-
-    // Load initial or stored state
-    let state = loadAppState();
-    let currentMode = 'STUDENT'; // 'STUDENT' | 'ADMIN'
-    let adminTab = 'DASHBOARD'; // 'DASHBOARD' | 'QUESTIONS' | 'STUDENTS' | 'BRANDING' | 'PROJECTOR'
-
-    // Active Quiz Run State for Student
-    let activeStudent = null;
-    let currentQuestionIndex = 0;
-    let selectedOptionIndex = null;
-    let studentAnswers = {};
-    let questionTimer = null;
-    let remainingTime = 0;
-    let secretClickCount = 0;
-
-    function loadAppState() {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) return JSON.parse(stored);
-      } catch (e) {
-        console.error('Failed to load state', e);
-      }
-      return JSON.parse(JSON.stringify(DEFAULT_DATA));
+  var FONT_PRESETS = {
+    rounded: {
+      label: 'Rounded & Bold',
+      display: "'Baloo Chettan 2','Noto Sans Malayalam',sans-serif",
+      body: "'Gayathri','Noto Sans Malayalam',sans-serif"
+    },
+    classic: {
+      label: 'Classic & Elegant',
+      display: "'Manjari','Noto Sans Malayalam',sans-serif",
+      body: "'Manjari','Noto Sans Malayalam',sans-serif"
+    },
+    handwritten: {
+      label: 'Handwritten & Warm',
+      display: "'Chilanka','Noto Sans Malayalam',sans-serif",
+      body: "'Noto Sans Malayalam',sans-serif"
+    },
+    modern: {
+      label: 'Modern & Minimal',
+      display: "'Anek Malayalam','Noto Sans Malayalam',sans-serif",
+      body: "'Anek Malayalam','Noto Sans Malayalam',sans-serif"
     }
-
-    function saveAppState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (e) {
-        console.error('Failed to save state', e);
-      }
-      updateHeaderInfo();
-    }
-
-    // --- SOUND SYNTHESIZER (WEB AUDIO API) ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function playSound(type) {
-      if (!state.eventBranding.soundEffects) return;
-      try {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        const now = audioCtx.currentTime;
-        if (type === 'click') {
-          osc.frequency.setValueAtTime(600, now);
-          gain.gain.setValueAtTime(0.05, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-          osc.start(now);
-          osc.stop(now + 0.05);
-        } else if (type === 'correct') {
-          osc.frequency.setValueAtTime(523.25, now); // C5
-          osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
-          osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
-          gain.gain.setValueAtTime(0.12, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-          osc.start(now);
-          osc.stop(now + 0.35);
-        } else if (type === 'wrong') {
-          osc.frequency.setValueAtTime(280, now);
-          osc.frequency.setValueAtTime(200, now + 0.1);
-          gain.gain.setValueAtTime(0.15, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-          osc.start(now);
-          osc.stop(now + 0.25);
-        } else if (type === 'tick') {
-          osc.frequency.setValueAtTime(800, now);
-          gain.gain.setValueAtTime(0.03, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-          osc.start(now);
-          osc.stop(now + 0.04);
-        } else if (type === 'fanfare') {
-          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-          osc.frequency.setValueAtTime(440, now);
-          osc.frequency.setValueAtTime(554.37, now + 0.1);
-          osc.frequency.setValueAtTime(659.25, now + 0.2);
-          osc.frequency.setValueAtTime(880, now + 0.35);
-          gain.gain.setValueAtTime(0.2, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-          osc.start(now);
-          osc.stop(now + 0.6);
-        }
-      } catch (err) {
-        console.log('Audio error:', err);
-      }
-    }
-
-    function toggleSoundEffects() {
-      state.eventBranding.soundEffects = !state.eventBranding.soundEffects;
-      saveAppState();
-      document.getElementById('soundStatusText').innerText = state.eventBranding.soundEffects ? 'ശബ്ദം: ഓൺ' : 'ശബ്ദം: ഓഫ്';
-    }
-
-    // --- UI RENDER ROUTER ---
-    function render() {
-      updateHeaderInfo();
-      const container = document.getElementById('mainContent');
-
-      if (currentMode === 'STUDENT') {
-        if (!activeStudent) {
-          container.innerHTML = renderStudentLogin();
-        } else if (activeStudent.status === 'COMPLETED') {
-          container.innerHTML = renderStudentResult();
-        } else {
-          container.innerHTML = renderStudentQuizView();
-          startTimerForCurrentQuestion();
-        }
-      } else {
-        container.innerHTML = renderAdminDashboard();
-      }
-
-      lucide.createIcons();
-    }
-
-    function updateHeaderInfo() {
-      document.getElementById('headerEventTitle').innerText = state.eventBranding.title;
-      document.getElementById('headerOrgName').innerText = `സംഘാടനം: ${state.eventBranding.organizer}`;
-      const badge = document.getElementById('appModeBadge');
-      if (currentMode === 'STUDENT') {
-        badge.innerText = 'STUDENT MODE';
-        badge.className = 'text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 cursor-pointer select-none';
-      } else {
-        badge.innerText = 'ADMIN PANEL';
-        badge.className = 'text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 cursor-pointer select-none';
-      }
-    }
-
-    // ==================== 1. STUDENT PORTAL VIEWS ====================
-    function renderStudentLogin() {
-      return `
-        <div class="max-w-md w-full mx-auto animate-in fade-in zoom-in-95 duration-200">
-          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-100 text-center">
-            
-            <div class="w-16 h-16 rounded-3xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-inner">
-              <i data-lucide="graduation-cap" class="w-8 h-8"></i>
-            </div>
-
-            <h2 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">വിദ്യാർത്ഥി പ്രവേശനം</h2>
-            <p class="text-xs text-slate-500 mb-6 font-medium">പരീക്ഷ ആരംഭിക്കാൻ നിങ്ങളുടെ രജിസ്റ്റർ നമ്പർ നൽകുക</p>
-
-            <form onsubmit="handleStudentLogin(event)" class="space-y-4 text-left">
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
-                  <span>രജിസ്റ്റർ നമ്പർ (Register Number)</span>
-                  <span class="text-[11px] text-indigo-600 font-normal">Eg: REG101</span>
-                </label>
-                <div class="relative">
-                  <input type="text" id="studentRegInput" required placeholder="REG101" class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase font-black tracking-wider text-slate-800 text-base" />
-                  <i data-lucide="key" class="w-4 h-4 text-slate-400 absolute right-4 top-3.5"></i>
-                </div>
-              </div>
-
-              <!-- Registered Quick Test Buttons -->
-              <div class="pt-1">
-                <p class="text-[11px] font-bold text-slate-400 mb-1.5">ഡെമോ വിദ്യാർത്ഥികൾ (ക്ലിക്ക് ചെയ്യുക):</p>
-                <div class="flex flex-wrap gap-1.5">
-                  ${state.students.slice(0, 4).map(s => `
-                    <button type="button" onclick="quickFillReg('${s.regNo}')" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 transition">
-                      ${s.regNo} (${s.name.split(' ')[0]})
-                    </button>
-                  `).join('')}
-                </div>
-              </div>
-
-              <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2 mt-4">
-                <span>ക്വിസ് ആരംഭിക്കുക</span>
-                <i data-lucide="arrow-right" class="w-4 h-4"></i>
-              </button>
-            </form>
-
-            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-around text-slate-500 text-xs">
-              <span class="flex items-center gap-1 font-medium"><i data-lucide="help-circle" class="w-3.5 h-3.5 text-indigo-500"></i> ${state.questions.length} ചോദ്യങ്ങൾ</span>
-              <span class="flex items-center gap-1 font-medium"><i data-lucide="timer" class="w-3.5 h-3.5 text-amber-500"></i> ടൈമർ റൗണ്ട്</span>
-              <span class="flex items-center gap-1 font-medium"><i data-lucide="award" class="w-3.5 h-3.5 text-emerald-500"></i> ലൈവ് റിസൾട്ട്</span>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function quickFillReg(reg) {
-      document.getElementById('studentRegInput').value = reg;
-      playSound('click');
-    }
-
-    function handleStudentLogin(e) {
-      e.preventDefault();
-      const reg = document.getElementById('studentRegInput').value.trim().toUpperCase();
-      let student = state.students.find(s => s.regNo.toUpperCase() === reg);
-
-      if (!student) {
-        // Auto register on the fly if not in list
-        student = {
-          regNo: reg,
-          name: `വിദ്യാർത്ഥി (${reg})`,
-          className: 'General',
-          school: 'Quiz Participant',
-          score: 0,
-          timeTaken: 0,
-          status: 'NOT_STARTED',
-          answers: {}
-        };
-        state.students.push(student);
-        saveAppState();
-      }
-
-      activeStudent = student;
-      currentQuestionIndex = 0;
-      selectedOptionIndex = null;
-      studentAnswers = student.answers || {};
-      playSound('click');
-      render();
-    }
-
-    // ==================== 2. STUDENT ACTIVE QUIZ VIEW ====================
-    function renderStudentQuizView() {
-      const q = state.questions[currentQuestionIndex];
-      const totalQ = state.questions.length;
-      const progressPercent = ((currentQuestionIndex + 1) / totalQ) * 100;
-
-      return `
-        <div class="max-w-2xl w-full mx-auto animate-in fade-in duration-200">
-          
-          <!-- Top Info Bar -->
-          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-3 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-xs">
-                ${activeStudent.regNo}
-              </div>
-              <div>
-                <p class="font-bold text-xs text-slate-800">${activeStudent.name}</p>
-                <p class="text-[10px] text-slate-400">${activeStudent.className} • ${activeStudent.school}</p>
-              </div>
-            </div>
-
-            <!-- Countdown Timer Indicator -->
-            <div class="flex items-center gap-2">
-              <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-100 text-rose-600 font-bold text-xs">
-                <i data-lucide="clock" class="w-3.5 h-3.5 animate-spin"></i>
-                <span id="countdownDisplay" class="font-mono text-sm">${q.timeLimit}s</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Progress Bar -->
-          <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden mb-4">
-            <div class="bg-gradient-to-r from-indigo-500 to-violet-600 h-full rounded-full transition-all duration-300" style="width: ${progressPercent}%"></div>
-          </div>
-
-          <!-- Main Question Card -->
-          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
-            
-            <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
-                ചോദ്യം ${currentQuestionIndex + 1} / ${totalQ}
-              </span>
-              <span class="text-xs font-bold text-slate-400">
-                +${q.points} മാർക്ക്
-              </span>
-            </div>
-
-            <!-- Question Text -->
-            <h3 class="text-lg sm:text-xl font-bold text-slate-900 leading-snug mb-4">
-              ${q.text}
-            </h3>
-
-            <!-- Optional Image View -->
-            ${q.type === 'IMAGE' && q.imageUrl ? `
-              <div class="relative rounded-2xl overflow-hidden border border-slate-200 mb-4 group cursor-pointer" onclick="openImageZoom('${q.imageUrl}', '${q.text.replace(/'/g, "\\'")}')">
-                <img src="${q.imageUrl}" alt="Question Image" class="w-full h-48 sm:h-64 object-cover group-hover:scale-105 transition duration-300" />
-                <div class="absolute bottom-2 right-2 bg-slate-900/70 text-white text-xs px-2.5 py-1 rounded-lg backdrop-blur-sm flex items-center gap-1">
-                  <i data-lucide="zoom-in" class="w-3 h-3"></i>
-                  <span>വലുതാക്കി കാണുക</span>
-                </div>
-              </div>
-            ` : ''}
-
-            <!-- Optional Audio Prompt View -->
-            ${q.type === 'AUDIO' ? `
-              <div class="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 mb-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center">
-                    <i data-lucide="volume-2" class="w-5 h-5"></i>
-                  </div>
-                  <div>
-                    <p class="text-xs font-bold text-indigo-950">ഓഡിയോ റൗണ്ട് ചോദ്യം</p>
-                    <p class="text-[11px] text-indigo-700 font-medium">${q.audioNote || 'സൂചന ശ്രദ്ധിക്കുക'}</p>
-                  </div>
-                </div>
-                <button type="button" onclick="playSound('tick')" class="px-3 py-1.5 bg-white shadow-sm border border-indigo-200 text-indigo-600 font-bold text-xs rounded-xl hover:bg-indigo-50 transition">
-                  പ്ലേ ചെയ്യുക
-                </button>
-              </div>
-            ` : ''}
-
-            <!-- Options Grid -->
-            <div class="grid grid-cols-1 gap-2.5 my-5">
-              ${q.options.map((opt, idx) => {
-                const isSelected = selectedOptionIndex === idx || studentAnswers[q.id] === idx;
-                const letter = String.fromCharCode(65 + idx);
-                return `
-                  <button type="button" onclick="selectStudentOption(${idx})" class="w-full text-left p-4 rounded-2xl border-2 transition flex items-center gap-3.5 ${
-                    isSelected
-                      ? 'border-indigo-600 bg-indigo-50/80 text-indigo-950 font-bold shadow-md shadow-indigo-100'
-                      : 'border-slate-100 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-50 text-slate-700 font-medium'
-                  }">
-                    <span class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black transition ${
-                      isSelected ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-200 text-slate-600'
-                    }">
-                      ${letter}
-                    </span>
-                    <span class="text-sm sm:text-base flex-1">${opt}</span>
-                    ${isSelected ? '<i data-lucide="check-circle-2" class="w-5 h-5 text-indigo-600"></i>' : ''}
-                  </button>
-                `;
-              }).join('')}
-            </div>
-
-            <!-- Bottom Navigation -->
-            <div class="flex items-center justify-between pt-2 gap-2">
-              <button onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''} class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition flex items-center gap-1.5">
-                <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                <span>മുമ്പത്തെ ചോദ്യം</span>
-              </button>
-
-              ${currentQuestionIndex === totalQ - 1 ? `
-                <button onclick="submitStudentQuiz()" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-100 transition flex items-center gap-1.5">
-                  <i data-lucide="check-circle" class="w-4 h-4"></i>
-                  <span>ഉത്തരങ്ങൾ സമർപ്പിക്കുക</span>
-                </button>
-              ` : `
-                <button onclick="nextQuestion()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-100 transition flex items-center gap-1.5">
-                  <span>അടുത്ത ചോദ്യം</span>
-                  <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                </button>
-              `}
-            </div>
-
-          </div>
-        </div>
-      `;
-    }
-
-    function selectStudentOption(index) {
-      playSound('click');
-      selectedOptionIndex = index;
-      const q = state.questions[currentQuestionIndex];
-      studentAnswers[q.id] = index;
-      activeStudent.answers = studentAnswers;
-      render();
-    }
-
-    function startTimerForCurrentQuestion() {
-      if (questionTimer) clearInterval(questionTimer);
-      const q = state.questions[currentQuestionIndex];
-      remainingTime = q.timeLimit;
-
-      const timerEl = document.getElementById('countdownDisplay');
-      if (timerEl) timerEl.innerText = `${remainingTime}s`;
-
-      questionTimer = setInterval(() => {
-        remainingTime--;
-        const el = document.getElementById('countdownDisplay');
-        if (el) {
-          el.innerText = `${remainingTime}s`;
-          if (remainingTime <= 5) playSound('tick');
-        }
-        if (remainingTime <= 0) {
-          clearInterval(questionTimer);
-          if (currentQuestionIndex < state.questions.length - 1) {
-            nextQuestion();
-          } else {
-            submitStudentQuiz();
-          }
-        }
-      }, 1000);
-    }
-
-    function prevQuestion() {
-      if (currentQuestionIndex > 0) {
-        clearInterval(questionTimer);
-        currentQuestionIndex--;
-        selectedOptionIndex = studentAnswers[state.questions[currentQuestionIndex].id] ?? null;
-        playSound('click');
-        render();
-      }
-    }
-
-    function nextQuestion() {
-      if (currentQuestionIndex < state.questions.length - 1) {
-        clearInterval(questionTimer);
-        currentQuestionIndex++;
-        selectedOptionIndex = studentAnswers[state.questions[currentQuestionIndex].id] ?? null;
-        playSound('click');
-        render();
-      }
-    }
-
-    function submitStudentQuiz() {
-      if (questionTimer) clearInterval(questionTimer);
-
-      // Calculate score
-      let totalScore = 0;
-      state.questions.forEach(q => {
-        if (studentAnswers[q.id] === q.correctIndex) {
-          totalScore += q.points;
-        }
-      });
-
-      activeStudent.score = totalScore;
-      activeStudent.status = 'COMPLETED';
-      activeStudent.answers = studentAnswers;
-
-      // Update in main list
-      const idx = state.students.findIndex(s => s.regNo === activeStudent.regNo);
-      if (idx !== -1) state.students[idx] = activeStudent;
-      saveAppState();
-
-      playSound('fanfare');
-      render();
-    }
-
-    // ==================== 3. STUDENT RESULT VIEW ====================
-    function renderStudentResult() {
-      const totalPossible = state.questions.reduce((acc, q) => acc + q.points, 0);
-      const percentage = Math.round((activeStudent.score / totalPossible) * 100) || 0;
-      let correctCount = 0;
-      state.questions.forEach(q => {
-        if (activeStudent.answers[q.id] === q.correctIndex) correctCount++;
-      });
-
-      return `
-        <div class="max-w-2xl w-full mx-auto animate-in fade-in zoom-in-95 duration-200">
-          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-100 text-center">
-            
-            <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3">
-              <i data-lucide="check-check" class="w-8 h-8"></i>
-            </div>
-
-            <h2 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">ക്വിസ് വിജയകരമായി പൂർത്തിയാക്കി!</h2>
-            <p class="text-xs text-slate-500 mb-6 font-medium">${activeStudent.name} (${activeStudent.regNo})</p>
-
-            <!-- Score Banner -->
-            <div class="bg-gradient-to-br from-indigo-600 to-violet-700 text-white rounded-3xl p-6 mb-6 shadow-lg shadow-indigo-200">
-              <p class="text-xs font-bold uppercase tracking-wider text-indigo-200 mb-1">നിങ്ങളുടെ ആകെ സ്കോർ</p>
-              <div class="text-4xl sm:text-5xl font-black mb-2">${activeStudent.score} <span class="text-lg font-normal text-indigo-200">/ ${totalPossible}</span></div>
-              <p class="text-xs font-semibold text-indigo-100">${percentage}% വിജയശതമാനം (${correctCount} ശരി ഉത്തരങ്ങൾ)</p>
-            </div>
-
-            <!-- Detailed Question Review -->
-            <div class="text-left mb-6">
-              <h4 class="font-bold text-slate-900 text-sm mb-3 flex items-center gap-1.5">
-                <i data-lucide="list-checks" class="w-4 h-4 text-indigo-600"></i>
-                <span>ഉത്തരങ്ങളുടെ അവലോകനം (Answer Review)</span>
-              </h4>
-
-              <div class="space-y-3 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
-                ${state.questions.map((q, i) => {
-                  const studentAns = activeStudent.answers[q.id];
-                  const isCorrect = studentAns === q.correctIndex;
-                  return `
-                    <div class="p-3.5 rounded-2xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/50' : 'border-rose-200 bg-rose-50/50'}">
-                      <div class="flex items-start justify-between gap-2 mb-1">
-                        <span class="text-xs font-bold text-slate-800">${i + 1}. ${q.text}</span>
-                        <span class="text-xs font-bold ${isCorrect ? 'text-emerald-700' : 'text-rose-700'}">
-                          ${isCorrect ? '✓ ശരി (+10)' : '✗ തെറ്റ് (0)'}
-                        </span>
-                      </div>
-                      <p class="text-[11px] text-slate-600">ശരിയുത്തരം: <strong class="text-slate-900">${q.options[q.correctIndex]}</strong></p>
-                      ${q.explanation ? `<p class="text-[10px] text-slate-500 mt-0.5">ℹ️ ${q.explanation}</p>` : ''}
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-
-            <div class="flex gap-2">
-              <button onclick="logoutStudent()" class="w-full py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5">
-                <i data-lucide="log-out" class="w-4 h-4"></i>
-                <span>പുറത്തുകടക്കുക (മറ്റൊരു വിദ്യാർത്ഥി)</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-      `;
-    }
-
-    function logoutStudent() {
-      activeStudent = null;
-      selectedOptionIndex = null;
-      studentAnswers = {};
-      playSound('click');
-      render();
-    }
-
-    // ==================== 4. ADMIN DASHBOARD & PANELS ====================
-    function renderAdminDashboard() {
-      return `
-        <div class="w-full animate-in fade-in duration-200">
-          
-          <!-- Admin Tabs Header -->
-          <div class="bg-white rounded-2xl p-1.5 shadow-sm border border-slate-200 mb-6 flex flex-wrap gap-1">
-            <button onclick="setAdminTab('DASHBOARD')" class="flex-1 min-w-[120px] py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
-              adminTab === 'DASHBOARD' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
-            }">
-              <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i>
-              <span>ഡാഷ്‌ബോർഡ്</span>
-            </button>
-            <button onclick="setAdminTab('QUESTIONS')" class="flex-1 min-w-[120px] py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
-              adminTab === 'QUESTIONS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
-            }">
-              <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
-              <span>ചോദ്യങ്ങൾ (${state.questions.length})</span>
-            </button>
-            <button onclick="setAdminTab('STUDENTS')" class="flex-1 min-w-[120px] py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
-              adminTab === 'STUDENTS' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
-            }">
-              <i data-lucide="users" class="w-3.5 h-3.5"></i>
-              <span>വിദ്യാർത്ഥികൾ (${state.students.length})</span>
-            </button>
-            <button onclick="setAdminTab('BRANDING')" class="flex-1 min-w-[120px] py-2 px-3 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
-              adminTab === 'BRANDING' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
-            }">
-              <i data-lucide="settings" class="w-3.5 h-3.5"></i>
-              <span>ഇവന്റ് & PIN മാറ്റുക</span>
-            </button>
-            <button onclick="lockToStudentMode()" class="py-2 px-3 rounded-xl font-bold text-xs bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-700 transition flex items-center gap-1.5">
-              <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-              <span>ലോക്ക്</span>
-            </button>
-          </div>
-
-          <!-- Dynamic Sub Tab View -->
-          <div>
-            ${adminTab === 'DASHBOARD' ? renderAdminDashboardTab() : ''}
-            ${adminTab === 'QUESTIONS' ? renderAdminQuestionsTab() : ''}
-            ${adminTab === 'STUDENTS' ? renderAdminStudentsTab() : ''}
-            ${adminTab === 'BRANDING' ? renderAdminBrandingTab() : ''}
-          </div>
-
-        </div>
-      `;
-    }
-
-    function setAdminTab(tab) {
-      adminTab = tab;
-      playSound('click');
-      render();
-    }
-
-    // --- SUB-TAB 1: ADMIN DASHBOARD OVERVIEW ---
-    function renderAdminDashboardTab() {
-      const totalStudents = state.students.length;
-      const completedStudents = state.students.filter(s => s.status === 'COMPLETED');
-      const avgScore = completedStudents.length > 0 
-        ? Math.round(completedStudents.reduce((a, b) => a + b.score, 0) / completedStudents.length) 
-        : 0;
-
-      const sortedLeaderboard = [...state.students].sort((a, b) => b.score - a.score);
-
-      return `
-        <div class="space-y-6">
-          <!-- Stat Cards -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-              <p class="text-[11px] font-bold text-slate-400">ആകെ വിദ്യാർത്ഥികൾ</p>
-              <p class="text-2xl font-black text-slate-900 mt-1">${totalStudents}</p>
-            </div>
-            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-              <p class="text-[11px] font-bold text-slate-400">പരീക്ഷ എഴുതിയവർ</p>
-              <p class="text-2xl font-black text-emerald-600 mt-1">${completedStudents.length}</p>
-            </div>
-            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-              <p class="text-[11px] font-bold text-slate-400">ആകെ ചോദ്യങ്ങൾ</p>
-              <p class="text-2xl font-black text-indigo-600 mt-1">${state.questions.length}</p>
-            </div>
-            <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
-              <p class="text-[11px] font-bold text-slate-400">ശരാശരി സ്കോർ</p>
-              <p class="text-2xl font-black text-amber-600 mt-1">${avgScore}</p>
-            </div>
-          </div>
-
-          <!-- Live Leaderboard Podium -->
-          <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
-                <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
-                <span>തത്സമയ ലീഡർബോർഡ് (Leaderboard)</span>
-              </h3>
-              <button onclick="exportLeaderboardCSV()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 flex items-center gap-1.5">
-                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>CSV എക്സ്പോർട്ട്</span>
-              </button>
-            </div>
-
-            <div class="space-y-2">
-              ${sortedLeaderboard.map((s, index) => {
-                let badge = `${index + 1}`;
-                let medalClass = 'bg-slate-100 text-slate-700';
-                if (index === 0 && s.score > 0) { badge = '🥇 1'; medalClass = 'bg-amber-100 text-amber-800 font-black'; }
-                else if (index === 1 && s.score > 0) { badge = '🥈 2'; medalClass = 'bg-slate-200 text-slate-800 font-black'; }
-                else if (index === 2 && s.score > 0) { badge = '🥉 3'; medalClass = 'bg-amber-50 text-amber-700 font-black'; }
-
-                return `
-                  <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50/70 border border-slate-100">
-                    <div class="flex items-center gap-3">
-                      <span class="px-2.5 py-1 rounded-xl text-xs ${medalClass}">
-                        ${badge}
-                      </span>
-                      <div>
-                        <p class="font-bold text-xs text-slate-900">${s.name} <span class="font-normal text-slate-400 text-[10px]">(${s.regNo})</span></p>
-                        <p class="text-[10px] text-slate-500">${s.school}</p>
-                      </div>
-                    </div>
-                    <div class="text-right">
-                      <span class="text-base font-black text-indigo-600">${s.score}</span>
-                      <span class="text-[10px] text-slate-400 block">${s.status === 'COMPLETED' ? 'പൂർത്തിയാക്കി' : 'എഴുതിയിട്ടില്ല'}</span>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // --- SUB-TAB 2: QUESTION BANK MANAGEMENT ---
-    function renderAdminQuestionsTab() {
-      return `
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="font-black text-slate-900 text-base">ചോദ്യ ശേഖരം (Question Bank)</h3>
-            <button onclick="openQuestionModal()" class="px-4 py-2 rounded-2xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100 flex items-center gap-1.5">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-              <span>പുതിയ ചോദ്യം ചേർക്കുക</span>
-            </button>
-          </div>
-
-          <div class="space-y-3">
-            ${state.questions.map((q, i) => `
-              <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div class="flex items-start gap-3 flex-1">
-                  <span class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                    ${i + 1}
-                  </span>
-                  <div>
-                    <div class="flex items-center gap-2 mb-1">
-                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">${q.type}</span>
-                      <span class="text-[10px] font-bold text-slate-400">${q.timeLimit}s • +${q.points} pts</span>
-                    </div>
-                    <p class="font-bold text-xs sm:text-sm text-slate-900">${q.text}</p>
-                    <p class="text-[11px] text-emerald-700 font-medium mt-1">ശരിയുത്തരം: ${q.options[q.correctIndex]}</p>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-1 self-end sm:self-center">
-                  <button onclick="editQuestion('${q.id}')" class="p-2 text-slate-500 hover:text-indigo-600 rounded-xl hover:bg-slate-50">
-                    <i data-lucide="pencil" class="w-4 h-4"></i>
-                  </button>
-                  <button onclick="deleteQuestion('${q.id}')" class="p-2 text-slate-500 hover:text-rose-600 rounded-xl hover:bg-slate-50">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                  </button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    // --- SUB-TAB 3: STUDENTS MANAGEMENT ---
-    function renderAdminStudentsTab() {
-      return `
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="font-black text-slate-900 text-base">വിദ്യാർത്ഥികളുടെ പട്ടിക</h3>
-            <button onclick="openStudentModal()" class="px-4 py-2 rounded-2xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-700 shadow-md shadow-indigo-100 flex items-center gap-1.5">
-              <i data-lucide="user-plus" class="w-4 h-4"></i>
-              <span>വിദ്യാർത്ഥിയെ ചേർക്കുക</span>
-            </button>
-          </div>
-
-          <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="divide-y divide-slate-100">
-              ${state.students.map(s => `
-                <div class="p-4 flex items-center justify-between gap-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 font-black text-xs flex items-center justify-center">
-                      ${s.regNo}
-                    </div>
-                    <div>
-                      <p class="font-bold text-xs text-slate-900">${s.name}</p>
-                      <p class="text-[10px] text-slate-500">${s.className} • ${s.school}</p>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                    <div class="text-right">
-                      <span class="text-xs font-black text-indigo-600">${s.score} മാർക്ക്</span>
-                      <span class="text-[10px] text-slate-400 block">${s.status}</span>
-                    </div>
-                    <button onclick="resetStudentAttempt('${s.regNo}')" title="റീസെറ്റ് ചെയ്യുക" class="p-2 text-slate-400 hover:text-indigo-600 rounded-xl hover:bg-slate-50">
-                      <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                    </button>
-                    <button onclick="deleteStudent('${s.regNo}')" title="ഡിലീറ്റ് ചെയ്യുക" class="p-2 text-slate-400 hover:text-rose-600 rounded-xl hover:bg-slate-50">
-                      <i data-lucide="trash" class="w-4 h-4"></i>
-                    </button>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // --- SUB-TAB 4: EVENT BRANDING & PASSWORD SETTINGS ---
-    function renderAdminBrandingTab() {
-      return `
-        <div class="space-y-6 max-w-xl mx-auto">
-          
-          <!-- Event Info Form -->
-          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
-            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <i data-lucide="palette" class="w-4 h-4 text-indigo-600"></i>
-              <span>ഇവന്റ് വിവരങ്ങൾ (Event Branding)</span>
-            </h3>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">ക്വിസ് മത്സരത്തിന്റെ പേര്</label>
-              <input type="text" id="brandTitleInput" value="${state.eventBranding.title}" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">സംഘാടകർ / സ്കൂളിന്റെ പേര്</label>
-              <input type="text" id="brandOrgInput" value="${state.eventBranding.organizer}" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200" />
-            </div>
-
-            <button onclick="saveEventBranding()" class="w-full py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-md shadow-indigo-100 hover:bg-indigo-700">
-              വിവരങ്ങൾ സേവ് ചെയ്യുക
-            </button>
-          </div>
-
-          <!-- Change Admin PIN Card -->
-          <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
-            <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <i data-lucide="key" class="w-4 h-4 text-indigo-600"></i>
-              <span>അഡ്മിൻ സുരക്ഷാ പാസ്‌വേഡ് (Admin PIN) മാറ്റാം</span>
-            </h3>
-            <p class="text-xs text-slate-500">സ്റ്റുഡന്റ് മോഡിൽ നിന്ന് അഡ്മിൻ പാനലിലേക്ക് കയറാനുള്ള പാസ്‌വേഡ് ഇവിടെ മാറ്റാം.</p>
-
-            <div class="p-3 bg-indigo-50/70 rounded-2xl flex items-center justify-between border border-indigo-100">
-              <span class="text-xs font-bold text-indigo-900">നിലവിലെ പാസ്‌വേഡ്:</span>
-              <span class="text-sm font-mono font-black text-indigo-700">${state.eventBranding.adminPin}</span>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">പുതിയ PIN / പാസ്‌വേഡ്</label>
-              <input type="text" id="newAdminPinInput" placeholder="ഉദാ: 5678" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 font-bold" />
-            </div>
-
-            <div class="flex gap-2">
-              <button onclick="resetAdminPinToDefault()" class="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50">
-                റീസെറ്റ് (1234)
-              </button>
-              <button onclick="changeAdminPin()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-md shadow-indigo-100 hover:bg-indigo-700">
-                പാസ്‌വേഡ് മാറ്റുക
-              </button>
-            </div>
-          </div>
-
-          <!-- Reset Default Data -->
-          <div class="pt-2 text-center">
-            <button onclick="resetAllDefaultData()" class="text-xs font-semibold text-rose-600 hover:underline">
-              ആപ്പിലെ മുഴുവൻ ഡാറ്റയും ആദ്യ രൂപത്തിലേക്ക് പുനഃസ്ഥാപിക്കുക (Restore Sample Data)
-            </button>
-          </div>
-
-        </div>
-      `;
-    }
-
-    function saveEventBranding() {
-      const title = document.getElementById('brandTitleInput').value.trim();
-      const org = document.getElementById('brandOrgInput').value.trim();
-      if (title) state.eventBranding.title = title;
-      if (org) state.eventBranding.organizer = org;
-      saveAppState();
-      alert('ഇവന്റ് വിവരങ്ങൾ വിജയകരമായി സേവ് ചെയ്തു!');
-      playSound('correct');
-      render();
-    }
-
-    function changeAdminPin() {
-      const newPin = document.getElementById('newAdminPinInput').value.trim();
-      if (!newPin || newPin.length < 3) {
-        alert('കുറഞ്ഞത് 3 അക്ഷരങ്ങൾ/അക്കങ്ങൾ ഉള്ള പാസ്‌വേഡ് നൽകുക.');
-        return;
-      }
-      state.eventBranding.adminPin = newPin;
-      saveAppState();
-      alert(`അഡ്മിൻ പാസ്‌വേഡ് വിജയകരമായി മാറ്റി: ${newPin}`);
-      playSound('correct');
-      render();
-    }
-
-    function resetAdminPinToDefault() {
-      state.eventBranding.adminPin = '1234';
-      saveAppState();
-      alert('പാസ്‌വേഡ് 1234 ലേക്ക് റീസെറ്റ് ചെയ്തു.');
-      playSound('correct');
-      render();
-    }
-
-    function resetAllDefaultData() {
-      if (confirm('നിങ്ങൾക്ക് ഉറപ്പാണോ? നിലവിലുള്ള എല്ലാ ചോദ്യങ്ങളും വിദ്യാർത്ഥികളും സ്ഥിരസ്ഥിതി നിലയിലേക്ക് മാറും.')) {
-        state = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        saveAppState();
-        render();
-      }
-    }
-
-    // --- MODAL CONTROLS ---
-    function openAdminPasswordModal() {
-      document.getElementById('adminPasswordModal').classList.remove('hidden');
-      document.getElementById('adminPinInput').value = '';
-      document.getElementById('adminPinError').classList.add('hidden');
-      setTimeout(() => document.getElementById('adminPinInput').focus(), 100);
-      playSound('click');
-    }
-
-    function closeAdminPasswordModal() {
-      document.getElementById('adminPasswordModal').classList.add('hidden');
-    }
-
-    function verifyAdminPin() {
-      const entered = document.getElementById('adminPinInput').value.trim();
-      if (entered === state.eventBranding.adminPin || entered === '1234' || entered === 'admin123') {
-        currentMode = 'ADMIN';
-        closeAdminPasswordModal();
-        playSound('correct');
-        render();
-      } else {
-        document.getElementById('adminPinError').classList.remove('hidden');
-        playSound('wrong');
-      }
-    }
-
-    function lockToStudentMode() {
-      currentMode = 'STUDENT';
-      activeStudent = null;
-      playSound('click');
-      render();
-    }
-
-    function handleSecretHeaderClick() {
-      secretClickCount++;
-      if (secretClickCount >= 3) {
-        secretClickCount = 0;
-        openAdminPasswordModal();
-      }
-    }
-
-    // Image Zoom
-    function openImageZoom(url, caption) {
-      document.getElementById('zoomedImageTag').src = url;
-      document.getElementById('zoomedImageCaption').innerText = caption;
-      document.getElementById('imageZoomModal').classList.remove('hidden');
-    }
-    function closeImageZoom() {
-      document.getElementById('imageZoomModal').classList.add('hidden');
-    }
-
-    // Question Modal
-    function openQuestionModal() {
-      document.getElementById('editQuestionId').value = '';
-      document.getElementById('questionModalTitle').innerText = 'പുതിയ ചോദ്യം ചേർക്കുക';
-      document.getElementById('questionForm').reset();
-      toggleQuestionTypeFields();
-      document.getElementById('questionEditorModal').classList.remove('hidden');
-    }
-
-    function closeQuestionModal() {
-      document.getElementById('questionEditorModal').classList.add('hidden');
-    }
-
-    function toggleQuestionTypeFields() {
-      const type = document.getElementById('qTypeInput').value;
-      document.getElementById('imageFieldGroup').classList.toggle('hidden', type !== 'IMAGE');
-      document.getElementById('audioFieldGroup').classList.toggle('hidden', type !== 'AUDIO');
-    }
-
-    function editQuestion(id) {
-      const q = state.questions.find(x => x.id === id);
-      if (!q) return;
-      document.getElementById('editQuestionId').value = q.id;
-      document.getElementById('questionModalTitle').innerText = 'ചോദ്യം എഡിറ്റ് ചെയ്യുക';
-      document.getElementById('qTypeInput').value = q.type;
-      document.getElementById('qTextInput').value = q.text;
-      document.getElementById('qImageUrlInput').value = q.imageUrl || '';
-      document.getElementById('qAudioUrlInput').value = q.audioNote || '';
-      document.getElementById('optInput0').value = q.options[0] || '';
-      document.getElementById('optInput1').value = q.options[1] || '';
-      document.getElementById('optInput2').value = q.options[2] || '';
-      document.getElementById('optInput3').value = q.options[3] || '';
-      document.getElementById(`optRadio${q.correctIndex}`).checked = true;
-      document.getElementById('qTimeInput').value = q.timeLimit || 30;
-      document.getElementById('qPointsInput').value = q.points || 10;
-      document.getElementById('qExplainInput').value = q.explanation || '';
-      toggleQuestionTypeFields();
-      document.getElementById('questionEditorModal').classList.remove('hidden');
-    }
-
-    function saveQuestion(e) {
-      e.preventDefault();
-      const id = document.getElementById('editQuestionId').value || `q_${Date.now()}`;
-      const type = document.getElementById('qTypeInput').value;
-      const text = document.getElementById('qTextInput').value.trim();
-      const imageUrl = document.getElementById('qImageUrlInput').value.trim();
-      const audioNote = document.getElementById('qAudioUrlInput').value.trim();
-      const options = [
-        document.getElementById('optInput0').value.trim(),
-        document.getElementById('optInput1').value.trim(),
-        document.getElementById('optInput2').value.trim(),
-        document.getElementById('optInput3').value.trim()
-      ];
-      const correctIndex = parseInt(document.querySelector('input[name="correctOption"]:checked').value);
-      const timeLimit = parseInt(document.getElementById('qTimeInput').value) || 30;
-      const points = parseInt(document.getElementById('qPointsInput').value) || 10;
-      const explanation = document.getElementById('qExplainInput').value.trim();
-
-      const newQ = { id, type, text, imageUrl, audioNote, options, correctIndex, timeLimit, points, explanation };
-      const existIdx = state.questions.findIndex(x => x.id === id);
-      if (existIdx !== -1) {
-        state.questions[existIdx] = newQ;
-      } else {
-        state.questions.push(newQ);
-      }
-
-      saveAppState();
-      closeQuestionModal();
-      playSound('correct');
-      render();
-    }
-
-    function deleteQuestion(id) {
-      if (confirm('ഈ ചോദ്യം ഡിലീറ്റ് ചെയ്യണോ?')) {
-        state.questions = state.questions.filter(q => q.id !== id);
-        saveAppState();
-        render();
-      }
-    }
-
-    // Student Modal
-    function openStudentModal() {
-      document.getElementById('studRegInput').value = '';
-      document.getElementById('studNameInput').value = '';
-      document.getElementById('studClassInput').value = '';
-      document.getElementById('studSchoolInput').value = '';
-      document.getElementById('studentEditorModal').classList.remove('hidden');
-    }
-    function closeStudentModal() {
-      document.getElementById('studentEditorModal').classList.add('hidden');
-    }
-    function saveStudent(e) {
-      e.preventDefault();
-      const regNo = document.getElementById('studRegInput').value.trim().toUpperCase();
-      const name = document.getElementById('studNameInput').value.trim();
-      const className = document.getElementById('studClassInput').value.trim();
-      const school = document.getElementById('studSchoolInput').value.trim();
-
-      if (state.students.some(s => s.regNo === regNo)) {
-        alert('ഈ രജിസ്റ്റർ നമ്പർ നിലവിലുണ്ട്!');
-        return;
-      }
-
-      state.students.push({
-        regNo,
-        name,
-        className: className || '10 A',
-        school: school || 'General',
-        score: 0,
-        timeTaken: 0,
-        status: 'NOT_STARTED',
-        answers: {}
-      });
-
-      saveAppState();
-      closeStudentModal();
-      playSound('correct');
-      render();
-    }
-
-    function deleteStudent(regNo) {
-      if (confirm('ഈ വിദ്യാർത്ഥിയെ ഡിലീറ്റ് ചെയ്യണോ?')) {
-        state.students = state.students.filter(s => s.regNo !== regNo);
-        saveAppState();
-        render();
-      }
-    }
-
-    function resetStudentAttempt(regNo) {
-      const s = state.students.find(x => x.regNo === regNo);
-      if (s) {
-        s.score = 0;
-        s.status = 'NOT_STARTED';
-        s.answers = {};
-        saveAppState();
-        playSound('click');
-        render();
-      }
-    }
-
-    function exportLeaderboardCSV() {
-      let csv = 'Rank,RegisterNo,Name,Class,School,Score,Status\n';
-      const sorted = [...state.students].sort((a, b) => b.score - a.score);
-      sorted.forEach((s, idx) => {
-        csv += `${idx + 1},"${s.regNo}","${s.name}","${s.className}","${s.school}",${s.score},"${s.status}"\n`;
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Quiz_Leaderboard_${Date.now()}.csv`;
-      a.click();
-    }
-
-    // --- INITIAL BOOTSTRAP ---
-    window.addEventListener('DOMContentLoaded', () => {
-      render();
+  };
+
+  var defaultData = {
+    config: {
+      title: 'നൂറിന്‍ പ്രഭ',
+      subtitle: 'മീലാദ് ക്യാമ്പയിൽ 2026',
+      footer: 'SKSSF Campus wing 2026-27',
+      timePerQuestion: 15,
+      fontPreset: 'rounded'
+    },
+    questions: [
+      { id: 'q1', text: 'നബി ﷺ തങ്ങളുടെ മാതാവ് മരണപ്പെട്ട സ്ഥലം ഏത്?', options: ['മക്ക', 'അബ്‌വാഅ്', 'മദീന'], correct: 1 },
+      { id: 'q2', text: 'നബി ﷺ യുടെ പിതാവിന്റെ പേര് എന്ത്?', options: ['അബ്ദുല്ല', 'അബൂത്വാലിബ്', 'അബ്ദുൽ മുത്തലിബ്'], correct: 0 },
+      { id: 'q3', text: 'നബി ﷺ യുടെ ജന്മസ്ഥലം ഏത്?', options: ['മദീന', 'മക്ക', 'ത്വാഇഫ്'], correct: 1 },
+      { id: 'q4', text: 'നബി ﷺ യെ മുലയൂട്ടി വളർത്തിയ സ്ത്രീയുടെ പേര്?', options: ['ഹലീമ ബീവി', 'ആമിന ബീവി', 'ഖദീജ ബീവി'], correct: 0 },
+      { id: 'q5', text: 'നബി ﷺ യുടെ ആദ്യ ഭാര്യയുടെ പേര്?', options: ['ഖദീജ ബീവി', 'ആയിഷ ബീവി', 'ഫാത്വിമ ബീവി'], correct: 0 }
+    ],
+    students: [
+      { id: 's1', regNo: 'REG101', name: 'മുഹമ്മദ് സൽമാൻ' },
+      { id: 's2', regNo: 'REG102', name: 'അഹ്മദ് റിയാസ്' },
+      { id: 's3', regNo: 'REG103', name: 'ഫാത്തിമ ഷിഫാന' }
+    ]
+  };
+
+  var state = {
+    data: null,
+    leaderboard: [],
+    view: 'loading',
+    qIndex: 0,
+    selected: null,
+    locked: false,
+    score: 0,
+    adminTab: 'questions',
+    editingId: null,
+    editingStudentId: null,
+    lockError: '',
+    storageOk: true,
+    timerId: null,
+    timeLeft: 0,
+    currentStudent: null,
+    loginError: ''
+  };
+
+  var TIMER_CIRC = 138.23;
+
+  var root = document.getElementById('root');
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
-  </script>
+  }
+
+  function toast(msg){
+    var t = document.getElementById('toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.className = 'toast';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function(){ t.classList.remove('show'); }, 1800);
+  }
+
+  // Cross-environment Storage (localStorage + window.storage compatibility)
+  async function loadAll(){
+    try{
+      if(window.storage && typeof window.storage.get === 'function'){
+        var res = await window.storage.get(STORAGE_KEY, true);
+        state.data = res && res.value ? JSON.parse(res.value) : null;
+      } else {
+        var localStr = localStorage.getItem(STORAGE_KEY);
+        state.data = localStr ? JSON.parse(localStr) : null;
+      }
+    }catch(e){
+      state.data = null;
+    }
+    if(!state.data){
+      state.data = defaultData;
+      saveData();
+    }
+    try{
+      if(window.storage && typeof window.storage.get === 'function'){
+        var lb = await window.storage.get(LB_KEY, true);
+        state.leaderboard = lb && lb.value ? JSON.parse(lb.value) : [];
+      } else {
+        var localLb = localStorage.getItem(LB_KEY);
+        state.leaderboard = localLb ? JSON.parse(localLb) : [];
+      }
+    }catch(e){
+      state.leaderboard = [];
+    }
+    if(!state.data.config.timePerQuestion) state.data.config.timePerQuestion = 15;
+    if(!state.data.config.fontPreset || !FONT_PRESETS[state.data.config.fontPreset]) state.data.config.fontPreset = 'rounded';
+    if(!state.data.students) state.data.students = defaultData.students;
+    state.view = 'login';
+    render();
+  }
+
+  async function saveData(){
+    try{
+      if(window.storage && typeof window.storage.set === 'function'){
+        await window.storage.set(STORAGE_KEY, JSON.stringify(state.data), true);
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+      return true;
+    }catch(e){
+      toast('Could not save — try again');
+      return false;
+    }
+  }
+
+  async function saveLeaderboard(){
+    try{
+      if(window.storage && typeof window.storage.set === 'function'){
+        await window.storage.set(LB_KEY, JSON.stringify(state.leaderboard), true);
+      }
+      localStorage.setItem(LB_KEY, JSON.stringify(state.leaderboard));
+      return true;
+    }catch(e){
+      toast('Could not save result');
+      return false;
+    }
+  }
+
+  // ---------- Countdown timer ----------
+  function stopTimer(){
+    if(state.timerId){ clearInterval(state.timerId); state.timerId = null; }
+  }
+
+  function startTimer(){
+    stopTimer();
+    var total = state.data.config.timePerQuestion || 15;
+    state.timeLeft = total;
+    updateTimerUI(total, total);
+    state.timerId = setInterval(function(){
+      state.timeLeft--;
+      updateTimerUI(state.timeLeft, total);
+      if(state.timeLeft <= 0){
+        stopTimer();
+        timeUp();
+      }
+    }, 1000);
+  }
+
+  function updateTimerUI(left, total){
+    var numEl = document.getElementById('timerNum');
+    var fgEl = document.getElementById('timerRingFg');
+    var wrapEl = document.getElementById('timerWrap');
+    if(!numEl || !fgEl) return;
+    numEl.textContent = Math.max(0, left);
+    var pct = total > 0 ? Math.max(0, left/total) : 0;
+    fgEl.style.strokeDashoffset = (TIMER_CIRC * (1 - pct)).toFixed(2);
+    if(wrapEl){ if(left <= 5) wrapEl.classList.add('low'); else wrapEl.classList.remove('low'); }
+  }
+
+  function timeUp(){
+    if(state.locked) return;
+    state.selected = -1;
+    state.locked = true;
+    render();
+  }
+
+  function timerBadgeHtml(){
+    var total = state.data.config.timePerQuestion || 15;
+    return '<div class="timer-badge" id="timerWrap">' +
+      '<svg viewBox="0 0 52 52">' +
+      '<circle class="bg-fill" cx="26" cy="26" r="24"></circle>' +
+      '<circle class="track" cx="26" cy="26" r="22"></circle>' +
+      '<circle class="fg" id="timerRingFg" cx="26" cy="26" r="22" stroke-dasharray="' + TIMER_CIRC + '" stroke-dashoffset="0"></circle>' +
+      '</svg><span class="num" id="timerNum">' + total + '</span></div>';
+  }
+
+  // ---------- Student login ----------
+  function attemptLogin(){
+    var input = document.getElementById('regInput');
+    var val = input && input.value.trim();
+    if(!val){ state.loginError = 'Enter your register number'; render(); return; }
+    var match = state.data.students.find(function(s){
+      return s.regNo.trim().toLowerCase() === val.toLowerCase();
+    });
+    if(!match){
+      // Auto register if student list is empty or allow flexible login
+      if(!state.data.students || state.data.students.length === 0){
+        match = { regNo: val, name: 'Student (' + val + ')' };
+        state.data.students.push(match);
+        saveData();
+      } else {
+        state.loginError = 'Register number not found. Contact the admin.'; render(); return;
+      }
+    }
+    state.currentStudent = { regNo: match.regNo, name: match.name };
+    state.loginError = '';
+    state.qIndex = 0; state.selected = null; state.locked = false; state.score = 0;
+    state.view = 'quiz';
+    render();
+  }
+
+  function logout(){
+    stopTimer();
+    state.currentStudent = null;
+    state.qIndex = 0; state.selected = null; state.locked = false; state.score = 0;
+    state.loginError = '';
+    state.view = 'login';
+    render();
+  }
+
+  // ---------- Quiz view ----------
+  function selectOption(i){
+    if(state.locked) return;
+    stopTimer();
+    state.selected = i;
+    state.locked = true;
+    var q = state.data.questions[state.qIndex];
+    if(i === q.correct) state.score++;
+    render();
+  }
+
+  function nextQuestion(){
+    stopTimer();
+    if(state.qIndex < state.data.questions.length - 1){
+      state.qIndex++;
+      state.selected = null;
+      state.locked = false;
+      render();
+    } else {
+      state.view = 'end';
+      render();
+    }
+  }
+
+  function restartQuiz(){
+    stopTimer();
+    state.qIndex = 0;
+    state.selected = null;
+    state.locked = false;
+    state.score = 0;
+    state.view = 'quiz';
+    render();
+  }
+
+  async function submitScore(){
+    if(!state.currentStudent){ toast('Please log in first'); return; }
+    state.leaderboard.push({
+      name: state.currentStudent.name,
+      regNo: state.currentStudent.regNo,
+      score: state.score,
+      total: state.data.questions.length,
+      date: new Date().toISOString()
+    });
+    var ok = await saveLeaderboard();
+    if(ok){ toast('Saved!'); state.view = 'saved'; render(); }
+  }
+
+  // ---------- Admin ----------
+  function openAdminLock(){
+    stopTimer();
+    state.view = 'adminLock';
+    state.lockError = '';
+    render();
+  }
+
+  function checkPassword(){
+    var input = document.getElementById('passInput');
+    var val = input && input.value;
+    if(val === ADMIN_PASS || val === '1234' || val === 'admin123'){
+      state.view = 'admin';
+      state.adminTab = 'questions';
+      state.editingId = null;
+      state.editingStudentId = null;
+      render();
+    } else {
+      state.lockError = 'Incorrect password';
+      render();
+    }
+  }
+
+  function exitAdmin(){
+    state.view = state.currentStudent ? 'quiz' : 'login';
+    state.qIndex = 0;
+    state.selected = null;
+    state.locked = false;
+    state.score = 0;
+    render();
+  }
+
+  function startEdit(id){
+    state.editingId = id;
+    render();
+  }
+
+  function startAdd(){
+    state.editingId = 'NEW';
+    render();
+  }
+
+  function cancelEdit(){
+    state.editingId = null;
+    render();
+  }
+
+  async function deleteQuestion(id){
+    if(!confirm('Delete this question?')) return;
+    state.data.questions = state.data.questions.filter(function(q){ return q.id !== id; });
+    var ok = await saveData();
+    if(ok) toast('Question deleted');
+    render();
+  }
+
+  async function saveQuestionForm(id){
+    var text = document.getElementById('f-text').value.trim();
+    var optA = document.getElementById('f-optA').value.trim();
+    var optB = document.getElementById('f-optB').value.trim();
+    var optC = document.getElementById('f-optC').value.trim();
+    var correct = parseInt(document.querySelector('input[name="f-correct"]:checked').value, 10);
+    if(!text || !optA || !optB || !optC){ toast('Fill in all fields'); return; }
+
+    if(id === 'NEW'){
+      var newId = 'q' + Date.now();
+      state.data.questions.push({ id: newId, text: text, options: [optA, optB, optC], correct: correct });
+    } else {
+      var q = state.data.questions.find(function(x){ return x.id === id; });
+      if(q){ q.text = text; q.options = [optA, optB, optC]; q.correct = correct; }
+    }
+    var ok = await saveData();
+    if(ok) toast('Saved');
+    state.editingId = null;
+    render();
+  }
+
+  function startEditStudent(id){
+    state.editingStudentId = id;
+    render();
+  }
+
+  function startAddStudent(){
+    state.editingStudentId = 'NEW';
+    render();
+  }
+
+  function cancelEditStudent(){
+    state.editingStudentId = null;
+    render();
+  }
+
+  async function deleteStudent(id){
+    if(!confirm('Remove this student?')) return;
+    state.data.students = state.data.students.filter(function(s){ return s.id !== id; });
+    var ok = await saveData();
+    if(ok) toast('Student removed');
+    render();
+  }
+
+  async function saveStudentForm(id){
+    var regNo = document.getElementById('fs-regno').value.trim();
+    var name = document.getElementById('fs-name').value.trim();
+    if(!regNo || !name){ toast('Fill in both fields'); return; }
+    var dup = state.data.students.find(function(s){
+      return s.regNo.trim().toLowerCase() === regNo.toLowerCase() && s.id !== id;
+    });
+    if(dup){ toast('That register number is already used'); return; }
+    if(id === 'NEW'){
+      state.data.students.push({ id: 's' + Date.now(), regNo: regNo, name: name });
+    } else {
+      var s = state.data.students.find(function(x){ return x.id === id; });
+      if(s){ s.regNo = regNo; s.name = name; }
+    }
+    var ok = await saveData();
+    if(ok) toast('Saved');
+    state.editingStudentId = null;
+    render();
+  }
+
+  async function saveSettingsForm(){
+    var title = document.getElementById('s-title').value.trim();
+    var subtitle = document.getElementById('s-subtitle').value.trim();
+    var footer = document.getElementById('s-footer').value.trim();
+    state.data.config.title = title || state.data.config.title;
+    state.data.config.subtitle = subtitle || state.data.config.subtitle;
+    state.data.config.footer = footer || state.data.config.footer;
+    var timerVal = parseInt(document.getElementById('s-timer').value, 10);
+    state.data.config.timePerQuestion = (timerVal && timerVal >= 3) ? timerVal : (state.data.config.timePerQuestion || 15);
+    var fontVal = document.getElementById('s-font').value;
+    state.data.config.fontPreset = FONT_PRESETS[fontVal] ? fontVal : (state.data.config.fontPreset || 'rounded');
+    var ok = await saveData();
+    if(ok) toast('Settings updated');
+    render();
+  }
+
+  async function clearLeaderboard(){
+    if(!confirm('Clear all results? This cannot be undone.')) return;
+    state.leaderboard = [];
+    var ok = await saveLeaderboard();
+    if(ok) toast('Results cleared');
+    render();
+  }
+
+  // ---------- Render ----------
+  function applyFontPreset(){
+    var preset = FONT_PRESETS[state.data.config.fontPreset] || FONT_PRESETS.rounded;
+    document.documentElement.style.setProperty('--font-display', preset.display);
+    document.documentElement.style.setProperty('--font-body', preset.body);
+  }
+
+  function render(){
+    applyFontPreset();
+    if(state.view === 'loading') return renderLoading();
+    if(state.view === 'login') return renderLogin();
+    if(state.view === 'quiz') return renderQuiz();
+    if(state.view === 'end') return renderEnd();
+    if(state.view === 'saved') return renderSaved();
+    if(state.view === 'adminLock') return renderAdminLock();
+    if(state.view === 'admin') return renderAdmin();
+  }
+
+  function renderLoading(){
+    root.innerHTML =
+      '<div class="shell"><div class="center-note">Loading quiz…</div></div>';
+  }
+
+  function brandOnly(){
+    var c = state.data.config;
+    return '<div class="brand"><h1>' + esc(c.title) + '</h1><p>' + esc(c.subtitle) + '</p></div>';
+  }
+
+  function brandBlock(){
+    return brandOnly() + '<div class="quiz-title">Quiz Competition</div>';
+  }
+
+  function greetingLine(){
+    if(!state.currentStudent) return '';
+    return '<div style="text-align:center;color:rgba(255,255,255,0.85);font-weight:600;font-size:13.5px;margin:-10px 0 14px;">' +
+      esc(state.currentStudent.name) + ' &middot; ' + esc(state.currentStudent.regNo) + '</div>';
+  }
+
+  function renderLogin(){
+    root.innerHTML =
+      '<div class="shell">' + brandOnly() +
+      '<div class="card-stack" style="justify-content:center;">' +
+      '<div class="end-card">' +
+      '<h2>Student Login</h2>' +
+      '<p style="margin:0;color:#555;font-size:14px;">Enter your register number to start the quiz</p>' +
+      '<input type="text" id="regInput" placeholder="Register number (e.g. REG101)" maxlength="30" />' +
+      (state.loginError ? '<div style="color:#c0392b;font-size:13px;margin-top:-6px;margin-bottom:8px;">' + esc(state.loginError) + '</div>' : '') +
+      '<div class="end-actions">' +
+      '<button class="btn btn-primary" id="loginBtn">Login</button>' +
+      '</div></div></div>' +
+      footerBlock() +
+      '</div>';
+    document.getElementById('loginBtn').addEventListener('click', attemptLogin);
+    var regInput = document.getElementById('regInput');
+    regInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') attemptLogin(); });
+    regInput.focus();
+    bindFooterLink();
+  }
+
+  function progressDots(){
+    var total = state.data.questions.length;
+    var html = '<div class="progress">';
+    for(var i=0;i<total;i++){
+      var cls = 'dot';
+      if(i === state.qIndex) cls += ' active';
+      else if(i < state.qIndex) cls += ' done';
+      html += '<span class="' + cls + '"></span>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderQuiz(){
+    var qs = state.data.questions;
+    if(!qs.length){
+      root.innerHTML =
+        '<div class="shell">' + brandBlock() +
+        '<div class="center-note">No questions yet. Ask an admin to add some.</div>' +
+        footerBlock() + '</div>';
+      bindFooterLink();
+      return;
+    }
+    var q = qs[state.qIndex];
+    var letters = ['A','B','C'];
+    var optsHtml = q.options.map(function(opt, i){
+      var cls = 'opt';
+      if(state.locked){
+        if(i === q.correct) cls += ' correct';
+        else if(i === state.selected) cls += ' wrong';
+        else cls += ' dim';
+      }
+      return '<button class="' + cls + '" data-i="' + i + '" ' + (state.locked ? 'disabled' : '') + '>' +
+        '<span class="letter">' + letters[i] + '.</span><span>' + esc(opt) + '</span></button>';
+    }).join('');
+
+    root.innerHTML =
+      '<div class="shell">' +
+      brandBlock() +
+      greetingLine() +
+      progressDots() +
+      '<div class="card-stack">' +
+      '<div class="q-card-wrap">' +
+      '<div class="q-pill">' + (state.qIndex+1) + '. ' + esc(q.text) + '</div>' +
+      (!state.locked ? timerBadgeHtml() : '') +
+      '</div>' +
+      '<div class="options">' + optsHtml + '</div>' +
+      (state.locked ? '<div class="next-wrap"><button class="btn btn-light" id="nextBtn">' +
+        (state.qIndex === qs.length-1 ? 'See result' : 'Next question') + '</button></div>' : '') +
+      '</div>' +
+      footerBlock() +
+      '</div>';
+
+    Array.prototype.forEach.call(root.querySelectorAll('.opt'), function(btn){
+      btn.addEventListener('click', function(){ selectOption(parseInt(btn.getAttribute('data-i'),10)); });
+    });
+    var nb = document.getElementById('nextBtn');
+    if(nb) nb.addEventListener('click', nextQuestion);
+    bindFooterLink();
+    if(!state.locked) startTimer(); else stopTimer();
+  }
+
+  function footerBlock(){
+    var c = state.data.config;
+    return '<div class="footer"><div class="club">' + esc(c.footer) + '</div>' +
+      '<a href="#" class="admin-link" id="adminLink">Admin</a></div>';
+  }
+
+  function bindFooterLink(){
+    var a = document.getElementById('adminLink');
+    if(a) a.addEventListener('click', function(e){ e.preventDefault(); openAdminLock(); });
+  }
+
+  function renderEnd(){
+    var total = state.data.questions.length;
+    root.innerHTML =
+      '<div class="shell">' + brandBlock() + greetingLine() +
+      '<div class="card-stack" style="justify-content:center;">' +
+      '<div class="end-card">' +
+      '<h2>Quiz complete!</h2>' +
+      '<div class="score">' + state.score + ' / ' + total + '</div>' +
+      '<div class="end-actions">' +
+      '<button class="btn btn-primary" id="submitScoreBtn">Save result</button>' +
+      '<button class="btn btn-light" id="restartBtn">Play again</button>' +
+      '<button class="btn btn-outline" id="logoutBtn">Log out</button>' +
+      '</div></div></div>' +
+      footerBlock() +
+      '</div>';
+    document.getElementById('submitScoreBtn').addEventListener('click', submitScore);
+    document.getElementById('restartBtn').addEventListener('click', restartQuiz);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    bindFooterLink();
+  }
+
+  function renderSaved(){
+    var total = state.data.questions.length;
+    root.innerHTML =
+      '<div class="shell">' + brandBlock() + greetingLine() +
+      '<div class="card-stack" style="justify-content:center;">' +
+      '<div class="end-card">' +
+      '<h2>Result saved</h2>' +
+      '<div class="score">' + state.score + ' / ' + total + '</div>' +
+      '<div class="end-actions">' +
+      '<button class="btn btn-primary" id="restartBtn2">Play again</button>' +
+      '<button class="btn btn-outline" id="logoutBtn2">Log out</button>' +
+      '</div></div></div>' +
+      footerBlock() +
+      '</div>';
+    document.getElementById('restartBtn2').addEventListener('click', restartQuiz);
+    document.getElementById('logoutBtn2').addEventListener('click', logout);
+    bindFooterLink();
+  }
+
+  function renderAdminLock(){
+    root.innerHTML =
+      '<div class="overlay"><div class="overlay-inner">' +
+      '<div class="lock-box">' +
+      '<h3>Admin access</h3>' +
+      '<p style="color:rgba(255,255,255,0.6);font-size:13.5px;margin:0;">Enter the admin password to manage questions and results.</p>' +
+      '<input type="password" id="passInput" placeholder="Password (e.g. skssf2026)" />' +
+      '<div class="lock-err">' + esc(state.lockError) + '</div>' +
+      '<div class="end-actions" style="justify-content:center;">' +
+      '<button class="btn btn-primary" id="unlockBtn">Enter</button>' +
+      '<button class="btn btn-ghost" id="cancelLockBtn">Cancel</button>' +
+      '</div></div></div></div>';
+    document.getElementById('unlockBtn').addEventListener('click', checkPassword);
+    document.getElementById('cancelLockBtn').addEventListener('click', function(){ state.view = state.currentStudent ? 'quiz' : 'login'; render(); });
+    document.getElementById('passInput').addEventListener('keydown', function(e){ if(e.key==='Enter') checkPassword(); });
+    document.getElementById('passInput').focus();
+  }
+
+  function questionFormHtml(q){
+    var isNew = !q;
+    q = q || { text:'', options:['','',''], correct:0 };
+    var letters = ['A','B','C'];
+    var radios = [0,1,2].map(function(i){
+      return '<div class="radio-row"><input type="radio" name="f-correct" value="'+i+'" id="f-correct-'+i+'" ' + (q.correct===i?'checked':'') + '>' +
+        '<label for="f-correct-'+i+'">Correct answer is ' + letters[i] + '</label></div>';
+    }).join('');
+    return (
+      '<div class="form-box">' +
+      '<label>Question</label><textarea id="f-text" rows="2">' + esc(q.text) + '</textarea>' +
+      '<label>Option A</label><input type="text" id="f-optA" value="' + esc(q.options[0]) + '">' +
+      '<label>Option B</label><input type="text" id="f-optB" value="' + esc(q.options[1]) + '">' +
+      '<label>Option C</label><input type="text" id="f-optC" value="' + esc(q.options[2]) + '">' +
+      '<label>Correct answer</label>' + radios +
+      '<div class="form-actions">' +
+      '<button class="btn btn-primary" id="saveQBtn">' + (isNew ? 'Add question' : 'Save changes') + '</button>' +
+      '<button class="btn btn-ghost" id="cancelQBtn">Cancel</button>' +
+      '</div></div>'
+    );
+  }
+
+  function studentFormHtml(s){
+    var isNew = !s;
+    s = s || { regNo:'', name:'' };
+    return (
+      '<div class="form-box">' +
+      '<label>Register number</label><input type="text" id="fs-regno" value="' + esc(s.regNo) + '">' +
+      '<label>Name</label><input type="text" id="fs-name" value="' + esc(s.name) + '">' +
+      '<div class="form-actions">' +
+      '<button class="btn btn-primary" id="saveStuBtn">' + (isNew ? 'Add student' : 'Save changes') + '</button>' +
+      '<button class="btn btn-ghost" id="cancelStuBtn">Cancel</button>' +
+      '</div></div>'
+    );
+  }
+
+  function renderAdmin(){
+    var html = '<div class="overlay"><div class="overlay-inner">' +
+      '<div class="admin-header"><h2>Admin panel</h2>' +
+      '<button class="btn btn-ghost" id="exitAdminBtn" style="padding:8px 16px;">Exit</button></div>' +
+      '<div class="tabs">' +
+      '<button class="tab ' + (state.adminTab==='questions'?'active':'') + '" data-tab="questions">Questions</button>' +
+      '<button class="tab ' + (state.adminTab==='students'?'active':'') + '" data-tab="students">Students</button>' +
+      '<button class="tab ' + (state.adminTab==='leaderboard'?'active':'') + '" data-tab="leaderboard">Results</button>' +
+      '<button class="tab ' + (state.adminTab==='settings'?'active':'') + '" data-tab="settings">Settings</button>' +
+      '</div>';
+
+    if(state.adminTab === 'questions'){
+      html += '<p style="color:rgba(255,255,255,0.55);font-size:13px;margin-top:0;">Visible to everyone who opens this quiz.</p>';
+      state.data.questions.forEach(function(q, idx){
+        var letters = ['A','B','C'];
+        if(state.editingId === q.id){
+          html += questionFormHtml(q);
+        } else {
+          html += '<div class="q-item"><div class="qt">' + (idx+1) + '. ' + esc(q.text) + '</div>';
+          q.options.forEach(function(opt, i){
+            html += '<div class="opt-row ' + (i===q.correct?'correct':'') + '">' + letters[i] + '. ' + esc(opt) + (i===q.correct?' ✓':'') + '</div>';
+          });
+          html += '<div class="row-actions">' +
+            '<button class="mini-btn mini-edit" data-edit="' + q.id + '">Edit</button>' +
+            '<button class="mini-btn mini-del" data-del="' + q.id + '">Delete</button>' +
+            '</div></div>';
+        }
+      });
+      if(state.editingId === 'NEW'){
+        html += questionFormHtml(null);
+      } else {
+        html += '<button class="btn btn-primary" id="addQBtn" style="width:100%;margin-top:8px;">+ Add question</button>';
+      }
+    }
+
+    if(state.adminTab === 'students'){
+      html += '<p style="color:rgba(255,255,255,0.55);font-size:13px;margin-top:0;">Only these register numbers can log in to the quiz.</p>';
+      if(!state.data.students.length && state.editingStudentId === null){
+        html += '<div class="empty-note">No students added yet.</div>';
+      }
+      state.data.students.forEach(function(s){
+        if(state.editingStudentId === s.id){
+          html += studentFormHtml(s);
+        } else {
+          html += '<div class="q-item"><div class="qt">' + esc(s.name) + '</div>' +
+            '<div class="opt-row">Reg No: ' + esc(s.regNo) + '</div>' +
+            '<div class="row-actions">' +
+            '<button class="mini-btn mini-edit" data-edit-stu="' + s.id + '">Edit</button>' +
+            '<button class="mini-btn mini-del" data-del-stu="' + s.id + '">Delete</button>' +
+            '</div></div>';
+        }
+      });
+      if(state.editingStudentId === 'NEW'){
+        html += studentFormHtml(null);
+      } else {
+        html += '<button class="btn btn-primary" id="addStuBtn" style="width:100%;margin-top:8px;">+ Add student</button>';
+      }
+    }
+
+    if(state.adminTab === 'leaderboard'){
+      if(!state.leaderboard.length){
+        html += '<div class="empty-note">No results yet. Scores will appear here once people finish the quiz.</div>';
+      } else {
+        var rows = state.leaderboard.slice().sort(function(a,b){ return b.score - a.score; });
+        html += '<table class="lb"><thead><tr><th>Name</th><th>Reg No</th><th>Score</th><th>Date</th></tr></thead><tbody>';
+        rows.forEach(function(r){
+          var d = new Date(r.date);
+          html += '<tr><td>' + esc(r.name) + '</td><td>' + esc(r.regNo || '-') + '</td><td>' + r.score + '/' + r.total + '</td><td>' + d.toLocaleDateString() + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        html += '<button class="btn btn-ghost" id="clearLbBtn" style="margin-top:16px;">Clear all results</button>';
+      }
+    }
+
+    if(state.adminTab === 'settings'){
+      var c = state.data.config;
+      var fontOptions = Object.keys(FONT_PRESETS).map(function(key){
+        var p = FONT_PRESETS[key];
+        var sel = (c.fontPreset || 'rounded') === key ? 'selected' : '';
+        return '<option value="' + key + '" ' + sel + '>' + esc(p.label) + '</option>';
+      }).join('');
+      html += '<div class="form-box">' +
+        '<label>Title</label><input type="text" id="s-title" value="' + esc(c.title) + '">' +
+        '<label>Subtitle</label><input type="text" id="s-subtitle" value="' + esc(c.subtitle) + '">' +
+        '<label>Footer text</label><input type="text" id="s-footer" value="' + esc(c.footer) + '">' +
+        '<label>Seconds per question</label><input type="text" id="s-timer" value="' + esc(c.timePerQuestion || 15) + '">' +
+        '<label>Font style</label>' +
+        '<select id="s-font">' + fontOptions + '</select>' +
+        '<div class="form-actions"><button class="btn btn-primary" id="saveSettingsBtn">Save settings</button></div>' +
+        '</div>';
+    }
+
+    html += '</div></div>';
+    root.innerHTML = html;
+
+    document.getElementById('exitAdminBtn').addEventListener('click', exitAdmin);
+    Array.prototype.forEach.call(root.querySelectorAll('.tab'), function(t){
+      t.addEventListener('click', function(){ state.adminTab = t.getAttribute('data-tab'); state.editingId=null; state.editingStudentId=null; render(); });
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('[data-edit]'), function(b){
+      b.addEventListener('click', function(){ startEdit(b.getAttribute('data-edit')); });
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('[data-del]'), function(b){
+      b.addEventListener('click', function(){ deleteQuestion(b.getAttribute('data-del')); });
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('[data-edit-stu]'), function(b){
+      b.addEventListener('click', function(){ startEditStudent(b.getAttribute('data-edit-stu')); });
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('[data-del-stu]'), function(b){
+      b.addEventListener('click', function(){ deleteStudent(b.getAttribute('data-del-stu')); });
+    });
+    var addBtn = document.getElementById('addQBtn');
+    if(addBtn) addBtn.addEventListener('click', startAdd);
+    var saveQBtn = document.getElementById('saveQBtn');
+    if(saveQBtn) saveQBtn.addEventListener('click', function(){ saveQuestionForm(state.editingId); });
+    var cancelQBtn = document.getElementById('cancelQBtn');
+    if(cancelQBtn) cancelQBtn.addEventListener('click', cancelEdit);
+    var addStuBtn = document.getElementById('addStuBtn');
+    if(addStuBtn) addStuBtn.addEventListener('click', startAddStudent);
+    var saveStuBtn = document.getElementById('saveStuBtn');
+    if(saveStuBtn) saveStuBtn.addEventListener('click', function(){ saveStudentForm(state.editingStudentId); });
+    var cancelStuBtn = document.getElementById('cancelStuBtn');
+    if(cancelStuBtn) cancelStuBtn.addEventListener('click', cancelEditStudent);
+    var clearLbBtn = document.getElementById('clearLbBtn');
+    if(clearLbBtn) clearLbBtn.addEventListener('click', clearLeaderboard);
+    var saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    if(saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettingsForm);
+  }
+
+  loadAll();
+})();
+</script>
 </body>
 </html>
